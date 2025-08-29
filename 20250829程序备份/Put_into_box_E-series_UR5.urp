@@ -1,0 +1,44 @@
+<URProgram createdIn="3.0.0.0" lastSavedIn="5.0.3.30563">
+  <children>
+    <MainProgram runOnlyOnce="true" speed="0.0" acceleration="0.0" useActiveTCP="false" positionType="CartesianPose">
+      <feature class="GeomFeatureReference" referencedName="Joint_0_name"/>
+      <children>
+        <Set type="NoAction" payload="0.0" tcpAsCog="true"/>
+        <Move motionType="MoveJ" speed="0.8726646259971648" acceleration="1.7453292519943295" useActiveTCP="false" positionType="JointAngles">
+          <children>
+            <Waypoint type="Fixed" name="Home" kinematicsFlags="4">
+              <motionParameters/>
+              <position>
+                <JointAngles angles="1.9073486328125E-6, -1.5707791608623047, -2.002716064453125E-5, -1.5707648557475586, -8.885060445606996E-6, -1.4607106344044496E-5"/>
+                <TCPOffset pose="0.0, 0.0, 0.0, 0.0, 0.0, 0.0"/>
+                <Kinematics status="NOT_INITIALIZED" validChecksum="true">
+                  <deltaTheta value="0.0, 0.0, 0.0, 0.0, 0.0, 0.0"/>
+                  <a value="0.0, -0.425, -0.3922, 0.0, 0.0, 0.0"/>
+                  <d value="0.1625, 0.0, 0.0, 0.1333, 0.0997, 0.0996"/>
+                  <alpha value="1.570796327, 0.0, 0.0, 1.570796327, -1.570796327, 0.0"/>
+                  <jointChecksum value="-1389404278, -1386551615, 777027671, -1377098474, -1377164019, -1375013797"/>
+                </Kinematics>
+              </position>
+              <BaseToFeature pose="0.0, 0.0, 0.0, 0.0, 0.0, 0.0"/>
+            </Waypoint>
+            <Waypoint type="Fixed" name="End" kinematicsFlags="4">
+              <motionParameters/>
+              <position>
+                <JointAngles angles="1.5707963267948966, 0.0, -2.827433388230814, -1.8849555921538759, 3.141592653589793, 1.5707963267948966"/>
+                <TCPOffset pose="0.0, 0.0, 0.0, 0.0, 0.0, 0.0"/>
+                <Kinematics status="NOT_INITIALIZED" validChecksum="true">
+                  <deltaTheta value="0.0, 0.0, 0.0, 0.0, 0.0, 0.0"/>
+                  <a value="0.0, -0.425, -0.3922, 0.0, 0.0, 0.0"/>
+                  <d value="0.1625, 0.0, 0.0, 0.1333, 0.0997, 0.0996"/>
+                  <alpha value="1.570796327, 0.0, 0.0, 1.570796327, -1.570796327, 0.0"/>
+                  <jointChecksum value="-1389404278, -1386551615, 777027671, -1377098474, -1377164019, -1375013797"/>
+                </Kinematics>
+              </position>
+              <BaseToFeature pose="0.0, 0.0, 0.0, 0.0, 0.0, 0.0"/>
+            </Waypoint>
+          </children>
+        </Move>
+      </children>
+    </MainProgram>
+  </children>
+</URProgram>

@@ -1,0 +1,69 @@
+ 程序
+   变量设置
+   机器人程序
+     MoveJ
+       路点_1
+     move = rpc_factory("xmlrpc","http://192.168.1.5:9121/RPC2")
+     usb = rpc_factory("xmlrpc","http://192.168.1.7:9120/RPC2")
+     usb.open()
+     n≔0
+     循环
+       MoveJ
+         路点_1
+       n≔n + 1
+       move.take_photo()
+       弹出窗口: 123
+       循环 5 次数
+         'obj_num≔获取整数'
+         obj_num≔n
+         '弹出窗口: 12'
+         pose≔p[0.0,0.0,0.0,2.273,-2.193,0.004]
+         'var_2 = move.move_pose(obj_num)'
+         var_2≔move.move_pose(obj_num)
+         'var_2 = move.move_pose(n)'
+         pose[0]=var_2[0]
+         pose[1]=var_2[1]
+         pose[2]=0.315
+         If obj_num==1
+           pose[0]=pose[0]-0.008
+           pose[1]=pose[1]-0.002
+         If obj_num==2
+           pose[0]=pose[0]-0.012
+           pose[1]=pose[1]-0.01
+         If obj_num==3
+           pose[0]=pose[0]-0.001
+           pose[1]=pose[1]-0.007
+         If obj_num==4
+           pose[0]=pose[0]+0.002
+           pose[1]=pose[1]+0.002
+         If obj_num==5
+           pose[0]=pose[0]-0.005
+           pose[1]=pose[1]-0.004
+         MoveL
+           pose
+         '中止'
+         pose[2]=var_2[2]
+         'If obj_num==1'
+         MoveL
+           pose
+         usb.adaptive_close()
+         pose[2]=0.315
+         MoveL
+           pose
+         If n==1
+           MoveL
+             路点_4
+         If n==2
+           MoveL
+             路点_2
+         If n==3
+           MoveL
+             路点_5
+         If n==4
+           MoveL
+             路点_6
+         If n==5
+           MoveL
+             路点_7
+         n=n+1
+         usb.open()

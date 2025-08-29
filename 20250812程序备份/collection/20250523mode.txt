@@ -1,0 +1,56 @@
+ 程序
+   变量设置
+   机器人程序
+     mode≔0
+     '0-空闲/1-基础验证/2-中心点Z/3-全点Z'
+     step_x≔0.004
+     step_y≔0.004
+     step_z≔0.0002
+     step_tcp≔0.0001
+     var_x≔[0,-1,1,-1,1,0]
+     var_y≔[0,-1,1,1,-1,0]
+     '一维路点(0,0)(-1,1)(1,1)(-1,-1)(1,-1)'
+     '默认一维路点(0,0)'
+     弹出窗口
+     MoveJ
+       路点_1
+       '过渡点'
+       tcp
+       '受力0，距离0'
+     If mode==0
+       弹出窗口: 空闲模式
+     ElseIf mode==1
+       弹出窗口: 基础TCP位置验证
+       step≔0
+       循环 20 次数
+         step≔step+1
+         tcptcp≔pose_add(tcp, p[0,0,-step_tcp*step,0,0,0])
+         MoveJ
+           弹出窗口
+           tcptcp
+       弹出窗口: 基础TCP位置验证
+     ElseIf mode==2
+       弹出窗口: 中心点Z方向测试
+       step≔0
+       循环 25 次数
+         step≔step+1
+         tcptcp≔pose_add(tcp, p[0,0,-step*step_z,0,0,0])
+         MoveJ
+           弹出窗口
+           tcptcp
+       弹出窗口: 中心点Z方向测试
+     ElseIf mode==3
+       弹出窗口: 全点Z测试
+       xy≔0
+       循环 5 次数
+         MoveJ
+           路点_1
+         xy≔xy+1
+         step≔0
+         循环 25 次数
+           step≔step+1
+           tcptcp≔pose_add(tcp, p[step_x*var_x[xy],step_y*var_y[xy],-step*step_z,0,0,0])
+           MoveJ
+             弹出窗口
+             tcptcp
+       弹出窗口: 全点Z测试

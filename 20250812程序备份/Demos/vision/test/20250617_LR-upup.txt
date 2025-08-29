@@ -1,0 +1,135 @@
+ 程序
+   变量设置
+   机器人程序
+     MoveJ
+       路点_1
+       If  False 
+         tttt
+     If  True 
+       offs1≔[-0.18,-0.05]
+       offs2≔[-0.18,0.05]
+       offs3≔[-0.1,-0.05]
+       offs4≔[-0.1,0.05]
+       offs5≔[0.1,-0.05]
+       offs6≔[0.1,0.05]
+       offs7≔[0.18,-0.05]
+       offs8≔[0.18,0.05]
+     If  True 
+       p1≔pose_add(tttt, p[offs1[0],offs1[1],0,0,0,0])
+       p2≔pose_add(tttt, p[offs2[0],offs2[1],0,0,0,0])
+       p3≔pose_add(tttt, p[offs3[0],offs3[1],0,0,0,0])
+       p4≔pose_add(tttt, p[offs4[0],offs4[1],0,0,0,0])
+       p5≔pose_add(tttt, p[offs5[0],offs5[1],0,0,0,0])
+       p6≔pose_add(tttt, p[offs6[0],offs6[1],0,0,0,0])
+       p7≔pose_add(tttt, p[offs7[0],offs7[1],0,0,0,0])
+       p8≔pose_add(tttt, p[offs8[0],offs8[1],0,0,0,0])
+     If  True 
+       vision = rpc_factory("xmlrpc","http://192.168.1.7:9121/RPC2")
+       gripper = rpc_factory("xmlrpc","http://192.168.1.7:9120/RPC2")
+       gripper.open()
+     If  True 
+       qqq≔0
+       h_up≔0.1
+       group1≔[p1,p2,p3,p4]
+       group2≔[p5,p6,p7,p8]
+     循环
+       'g1'
+       循环 qqq≤1
+         n≔0
+         qqq≔2
+         MoveJ
+           路点_1
+           等待: 0.5
+         campose≔get_actual_tcp_pose()
+         take≔ True 
+         循环 take== True 
+           photo≔vision.take_photo(campose)
+           If photo≠ True 
+             弹出窗口: continues?
+           Else
+             take≔ False 
+         articlenum≔vision.get_obj_num()
+         循环 n<articlenum
+           obj_num≔n
+           pose≔p[0.0,0.0,0.0,2.221,2.221,0.004]
+           obj_pose≔vision.get_obj_pose(obj_num)
+           pose[0]=obj_pose[0]
+           pose[1]=obj_pose[1]
+           pose[2]=obj_pose[2]+0.025
+           pose[3]=obj_pose[3]
+           pose[4]=obj_pose[4]
+           pose[5]=obj_pose[5]
+           MoveL
+             pose
+           pose[2]=obj_pose[2] - 0.06
+           If pose[2]<0.003
+             pose[2] = 0.003
+           MoveL
+             pose
+             gripper.adaptiveClose()
+           first_pose≔pose
+           pose[2]=pose[2] + h_up
+           MoveL
+             pose
+           target_pose≔group1[n]
+           target_pose[2]=first_pose[2]
+           down_pose≔target_pose
+           down_pose[2]=down_pose[2] + h_up
+           MoveL
+             down_pose
+           MoveL
+             target_pose
+             gripper.open()
+           MoveL
+             down_pose
+           n≔n + 1
+       'g2'
+       循环 qqq≥2
+         n≔0
+         qqq≔1
+         MoveJ
+           路点_1
+           等待: 0.5
+         campose≔get_actual_tcp_pose()
+         take≔ True 
+         循环 take== True 
+           photo≔vision.take_photo(campose)
+           If photo≠ True 
+             弹出窗口: continues?
+           Else
+             take≔ False 
+         articlenum≔vision.get_obj_num()
+         循环 n<articlenum
+           obj_num≔n
+           pose≔p[0.0,0.0,0.0,2.221,2.221,0.004]
+           obj_pose≔vision.get_obj_pose(obj_num)
+           pose[0]=obj_pose[0]
+           pose[1]=obj_pose[1]
+           pose[2]=obj_pose[2]+0.025
+           pose[3]=obj_pose[3]
+           pose[4]=obj_pose[4]
+           pose[5]=obj_pose[5]
+           MoveL
+             pose
+           pose[2]=obj_pose[2] - 0.06
+           If pose[2]<0.003
+             pose[2] = 0.003
+           MoveL
+             pose
+             gripper.adaptiveClose()
+           first_pose≔pose
+           pose[2]=pose[2] + h_up
+           MoveL
+             pose
+           target_pose≔group2[n]
+           target_pose[2]=first_pose[2]
+           down_pose≔target_pose
+           down_pose[2]=down_pose[2] + h_up
+           MoveL
+             down_pose
+           MoveL
+             target_pose
+             gripper.open()
+           MoveL
+             down_pose
+           n≔n + 1

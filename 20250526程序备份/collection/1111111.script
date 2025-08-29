@@ -1,0 +1,3 @@
+def send_tcptcp(tcptcp_pose):
+      start0.send_tcptcp(tcptcp_pose)
+      textmsg()

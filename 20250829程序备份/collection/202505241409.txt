@@ -1,0 +1,118 @@
+ 程序
+   变量设置
+   机器人程序
+     mode≔2
+     '0-空闲/1-基础验证/2-中心点Z/3-全点Z'
+     step_x≔0.004
+     step_y≔0.004
+     step_z≔0.0002
+     step_tcp≔0.0001
+     var_x≔[0,-1,1,-1,1,0]
+     var_y≔[0,-1,1,1,-1,0]
+     '一维路点(0,0)(-1,1)(1,1)(-1,-1)(1,-1)'
+     '默认一维路点(0,0)'
+     start0 = rpc_factory("xmlrpc","http://192.168.1.7:9125/RPC2")
+     'soket_open("192.168.1.7",9126)'
+     弹出窗口
+     MoveJ
+       路点_1
+       '过渡点'
+       tcp
+       '受力0，距离0'
+     If mode==0
+       弹出窗口: 空闲模式
+       'start0.trigger_s_key()'
+       '等待: 7.0'
+     ElseIf mode==1
+       弹出窗口: 基础TCP位置验证
+       step≔0
+       循环 20 次数
+         step≔step+1
+         tcptcp≔pose_add(tcp, p[0,0,-step_tcp*step,0,0,0])
+         tcptcpz≔tcptcp[2]
+         弹出窗口
+         'socket_open("192.168.1.7",9126)'
+         'socket_send("123")'
+         'socket_close()'
+         MoveJ
+           弹出窗口
+           tcptcp
+         'start0.send_float_data(tcptcpz)'
+         'start0.trigger_s_key()'
+         '等待: 7.0'
+       弹出窗口: 基础TCP位置验证
+     ElseIf mode==2
+       弹出窗口: 中心点Z方向测试
+       step≔0
+       循环 25 次数
+         step≔step+1
+         tcptcp≔pose_add(tcp, p[0,0,-step*step_z,0,0,0])
+         弹出窗口
+         MoveJ
+           弹出窗口
+           tcptcp
+         var_1≔tcptcp[0]
+         var_2≔tcptcp[1]
+         var_3≔tcptcp[2]
+         '弹出窗口: andand'
+         start0.xyz_s(var_1,var_2,var_3)
+         'start0.trigger_and_send_xyz(var_1,var_2,var_3)'
+         '弹出窗口: xyz s'
+         'start0.send_xyz_coordinates(var_1,var_2,var_3)'
+         '等待: 7.0'
+         'start0.trigger_s_key()'
+         等待: 7.0
+       弹出窗口: 中心点Z方向测试
+     ElseIf mode==22
+       弹出窗口: 中心点Z方向测试
+       step≔0
+       循环 25 次数
+         step≔step+1
+         tcptcp≔pose_add(tcp, p[0,0,-step*step_z,0,0,0])
+         '弹出窗口'
+         MoveJ
+           '弹出窗口'
+           tcptcp
+         var_1≔tcptcp[0]
+         var_2≔tcptcp[1]
+         var_3≔tcptcp[2]
+         start0.send_xyz_coordinates(var_1,var_2,var_3)
+         等待: 1.0
+         start0.trigger_s_key()
+         等待: 7.0
+       弹出窗口: 中心点Z方向测试
+     ElseIf mode==3
+       弹出窗口: 全点Z测试
+       xy≔0
+       循环 5 次数
+         MoveJ
+           路点_1
+         xy≔xy+1
+         step≔0
+         循环 25 次数
+           step≔step+1
+           tcptcp≔pose_add(tcp, p[step_x*var_x[xy],step_y*var_y[xy],-step*step_z,0,0,0])
+           MoveJ
+             弹出窗口
+             tcptcp
+           start0.trigger_s_key()
+           等待: 7.0
+       弹出窗口: 全点Z测试
+     ElseIf mode==33
+       弹出窗口: 全点Z测试
+       xy≔0
+       循环 5 次数
+         MoveJ
+           路点_1
+         xy≔xy+1
+         step≔0
+         循环 25 次数
+           step≔step+1
+           tcptcp≔pose_add(tcp, p[step_x*var_x[xy],step_y*var_y[xy],-step*step_z,0,0,0])
+           MoveJ
+             '弹出窗口'
+             tcptcp
+           等待: 1.0
+           start0.trigger_s_key()
+           等待: 7.0
+       弹出窗口: 全点Z测试

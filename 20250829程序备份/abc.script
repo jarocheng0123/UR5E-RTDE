@@ -1,0 +1,3 @@
+set_digital_out(0,False)
+sleep(3.0)
+set_digital_out(0,False)

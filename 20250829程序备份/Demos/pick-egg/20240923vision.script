@@ -1,0 +1,262 @@
+def P20240923vision():
+  global _hidden_verificationVariable=0
+  set_target_payload(1.500000, [0.001000, -0.003000, 0.050000], [0.003026, 0.003026, 0.003026, 0.000000, 0.000000, 0.000000])
+  set_tcp(p[-1.7E-4,0.0,0.19294999999999998,0.0,0.0,0.0])
+  set_tool_communication(True, 115200, 0, 1, 1.5, 3.5)
+  set_tool_output_mode(0)
+  set_tool_digital_output_mode(0, 1)
+  set_tool_digital_output_mode(1, 1)
+  set_tool_voltage(24)
+  set_standard_analog_input_domain(0, 1)
+  set_standard_analog_input_domain(1, 1)
+  set_tool_analog_input_domain(0, 1)
+  set_tool_analog_input_domain(1, 1)
+  set_analog_outputdomain(0, 1)
+  set_analog_outputdomain(1, 0)
+  set_input_actions_to_default()
+  set_tool_digital_input_action(0, "freedrive")
+  set_gravity([0.0, 0.0, 9.82])
+  set_safety_mode_transition_hardness(0)
+  global i_var_1=p[0.31, 0, 0, 0, 0, 0]
+  global u24179u38754_1=p[0.0,0.0,0.0,0.0,0.0,0.0]
+  global u24179u38754_2=p[0.2,0.6,0.4,-1.4839444017850547,-0.07419722008925289,-2.225916602677581]
+  global u24179u38754_3=p[0.1459477485431481,-0.10308445883660293,0.13857682671027435,-0.008977024873201634,0.014216906208388691,-2.4400986907073663]
+  global u28857_1=p[0.10203918836050063,-0.5259531579406657,0.376430278847906,-0.18768520041296463,-3.1325095402283982,-0.09669790600413578]
+  global u28857_2=p[0.0665007526844362,-0.3872123180436422,0.638459113340625,-0.320095108678139,-2.6903368475934015,1.4700117755369673]
+  global u30452u32447_1=p[0.0,0.0,0.0,0.0,0.0,0.0]
+  step_count_b4d2483f_8893_49b8_936f_64b158deedd3 = 0.0
+  thread Step_Counter_Thread_a2b80ebc_5de6_4f94_bd03_a8c00072d35d():
+    while (True):
+      step_count_b4d2483f_8893_49b8_936f_64b158deedd3 = step_count_b4d2483f_8893_49b8_936f_64b158deedd3 + 1.0
+      sync()
+    end
+  end
+  run Step_Counter_Thread_a2b80ebc_5de6_4f94_bd03_a8c00072d35d()
+  global u36335u28857_1_p=p[.104511126124, -.367886971260, .150559642288, -1.949339747521, -1.826249279458, -.604804033827]
+  global u36335u28857_1_q=[1.491742491722107, -1.4001733523658295, 1.7467568556415014, -1.3199103635600586, -1.573672119771139, 1.5610108375549316]
+  global u36335u28857_4_p=p[.408269829935, -.677568144843, .096098812767, 1.475201414443, 1.497182494928, -.960512499989]
+  global u36335u28857_4_q=[2.1065263748168945, -0.7567426723292847, 1.7862609068499964, -3.7286893330016078, -2.031253163014547, 1.798612117767334]
+  global u36335u28857_2_p=p[.357675486452, -.624980104725, .095339144774, 1.475241145660, 1.497171080565, -.960598259849]
+  global u36335u28857_2_q=[2.072202444076538, -0.838481144314148, 2.010716740285055, -3.878348251382345, -2.000037972127096, 1.7822818756103516]
+  global u36335u28857_5_p=p[.413621470713, -.173640925032, .003000000000, 2.221032249340, 2.221151910191, .002915554155]
+  global u36335u28857_5_q=[2.4391842894770424, -1.4248427357813265, 2.2490612009294804, -2.3964233326626534, -1.5701877739383132, 2.4417207139241484]
+  global u36335u28857_6_p=p[.335160305682, -.173643038891, .003000000000, 2.221104781643, 2.221148387742, .002882500334]
+  global u36335u28857_6_q=[2.298989389211478, -1.5907499584865308, 2.4316038300525378, -2.4127522093553964, -1.570029743661281, 2.301336201686844]
+  global u36335u28857_8_p=p[.254659207073, -.173630333056, .003000000000, 2.221156829342, 2.221109788587, .002925763736]
+  global u36335u28857_8_q=[2.0915011457074613, -1.7968725338654048, 2.597336343806123, -2.3719558786229413, -1.569802282634047, 2.0936667020041355]
+  global u36335u28857_9_p=p[.320033498095, -.097715719067, .003000000000, 2.221159099729, 2.221153288007, .002941416930]
+  global u36335u28857_9_q=[2.431599517809172, -1.7105863431857236, 2.5360646002355236, -2.3975802024681023, -1.5699550841170762, 2.43383169150386]
+  global u36335u28857_11_p=p[.405012851156, -.097731745474, .003000000000, 2.221175985368, 2.221116450260, .002938994671]
+  global u36335u28857_11_q=[2.5758670768663237, -1.4957730181348579, 2.332601437027153, -2.4092021415207423, -1.5702188881916044, 2.5783835876607437]
+  while (True):
+    $ 2 "机器人程序"
+    $ 3 "MoveJ"
+    $ 4 "路点_1" "breakAfter"
+    movej(u36335u28857_1_q, a=1.3962634015954636, v=1.0471975511965976)
+    $ 5 "vision = rpc_factory('xmlrpc','http://192.168.1.7:9121/RPC2')"
+    vision = rpc_factory("xmlrpc","http://192.168.1.7:9121/RPC2")
+    $ 6 "gripper = rpc_factory('xmlrpc','http://192.168.1.7:9120/RPC2')"
+    gripper = rpc_factory("xmlrpc","http://192.168.1.7:9120/RPC2")
+    $ 7 "gripper.open()"
+    gripper.open()
+    $ 11 "n≔1"
+    global n=1
+    $ 12 "循环"
+    while (True):
+      $ 13 "MoveJ"
+      $ 14 "路点_1" "breakAfter"
+      movej(get_inverse_kin(u36335u28857_1_p, qnear=u36335u28857_1_q), a=1.3962634015954636, v=1.5707963267948966)
+      $ 15 "弹出窗口: photo"
+      popup("photo", "消息", False, False, blocking=True)
+      $ 16 "campose≔get_actual_tcp_pose()"
+      global campose= get_actual_tcp_pose ()
+      $ 17 "vision.take_photo(campose)"
+      vision.take_photo(campose)
+      $ 18 "articlenum≔vision.get_obj_num()"
+      global articlenum=vision.get_obj_num()
+      $ 19 "弹出窗口: 123"
+      popup("123", "消息", False, False, blocking=True)
+      $ 20 "循环 n≤articlenum"
+      while (n <= articlenum):
+        $ 22 "obj_num≔n"
+        global obj_num=n
+        $ 24 "pick_point≔路点_1"
+        global pick_point=u36335u28857_1_p
+        $ 27 "var_2≔vision.get_obj_pose(obj_num)"
+        global var_2=vision.get_obj_pose(obj_num)
+        $ 28 "pick_point[0]=var_2[0]"
+        pick_point[0]=var_2[0]
+        $ 29 "pick_point[1]=var_2[1]-0.01"
+        pick_point[1]=var_2[1]-0.01
+        $ 30 "pick_point[2]=var_2[2]"
+        pick_point[2]=var_2[2]
+        $ 35 "MoveL"
+        $ 36 "pick_point" "breakAfter"
+        movel(pick_point, a=1.0, v=3.0)
+        $ 37 "pick_point[2]=var_2[2] - 0.035"
+        pick_point[2]=var_2[2] - 0.035
+        $ 38 "If pick_point[2] ≥ 0.003"
+        if (pick_point[2]  >=  0.003):
+          $ 39 "MoveL"
+          $ 40 "pick_point" "breakAfter"
+          movel(pick_point, a=1.0, v=3.0)
+          $ 41 "gripper.adaptiveClose()"
+          gripper.adaptiveClose()
+        else:
+          $ 42 "ElseIf pick_point[2] < 0.003"
+          if (pick_point[2] < 0.003):
+            $ 43 "pick_point[2] = 0.003"
+            pick_point[2] = 0.003
+            $ 44 "MoveL"
+            $ 45 "pick_point" "breakAfter"
+            movel(pick_point, a=1.0, v=3.0)
+            $ 46 "gripper.adaptiveClose()"
+            gripper.adaptiveClose()
+          end
+        end
+        $ 52 "pick_point[2]=var_2[2] + 0.1"
+        pick_point[2]=var_2[2] + 0.1
+        $ 53 "MoveL"
+        $ 54 "pick_point" "breakAfter"
+        movel(pick_point, a=1.0, v=3.0)
+        $ 58 "trs1≔pose_add(路点_4, p[0,0,0.2,0,0,0])"
+        global trs1= pose_add (u36335u28857_4_p, p[0,0,0.2,0,0,0])
+        $ 60 "If n == 1"
+        if (n == 1):
+          $ 61 "MoveL"
+          $ 62 "trs1" "breakAfter"
+          movel(trs1, a=1.0, v=3.0)
+          $ 63 "MoveL"
+          $ 64 "路点_4" "breakAfter"
+          movel(u36335u28857_4_p, a=1.0, v=3.0)
+          $ 66 "gripper.open()"
+          gripper.open()
+          $ 67 "MoveL"
+          $ 68 "trs1" "breakAfter"
+          movel(trs1, a=1.0, v=3.0)
+        end
+        $ 69 "trs2≔pose_add(路点_2, p[0,0,0.2,0,0,0])"
+        global trs2= pose_add (u36335u28857_2_p, p[0,0,0.2,0,0,0])
+        $ 70 "If n == 2"
+        if (n == 2):
+          $ 71 "MoveL"
+          $ 72 "trs2" "breakAfter"
+          movel(trs2, a=1.0, v=3.0)
+          $ 73 "MoveL"
+          $ 74 "路点_2" "breakAfter"
+          movel(u36335u28857_2_p, a=1.0, v=3.0)
+          $ 75 "gripper.open()"
+          gripper.open()
+          $ 76 "MoveL"
+          $ 77 "trs2" "breakAfter"
+          movel(trs2, a=1.0, v=3.0)
+        end
+        $ 78 "trs3≔pose_add(路点_5, p[0,0,0.2,0,0,0])"
+        global trs3= pose_add (u36335u28857_5_p, p[0,0,0.2,0,0,0])
+        $ 79 "If n == 3"
+        if (n == 3):
+          $ 80 "MoveL"
+          $ 81 "trs3" "breakAfter"
+          movel(trs3, a=1.0, v=3.0)
+          $ 82 "MoveL"
+          $ 83 "路点_5" "breakAfter"
+          movel(u36335u28857_5_p, a=1.0, v=3.0)
+          $ 84 "gripper.open()"
+          gripper.open()
+          $ 85 "MoveL"
+          $ 86 "trs3" "breakAfter"
+          movel(trs3, a=1.0, v=3.0)
+        end
+        $ 87 "trs4≔pose_add(路点_6, p[0,0,0.2,0,0,0])"
+        global trs4= pose_add (u36335u28857_6_p, p[0,0,0.2,0,0,0])
+        $ 88 "If n == 4"
+        if (n == 4):
+          $ 89 "MoveL"
+          $ 90 "trs4" "breakAfter"
+          movel(trs4, a=1.0, v=3.0)
+          $ 91 "MoveL"
+          $ 92 "路点_6" "breakAfter"
+          movel(u36335u28857_6_p, a=1.0, v=3.0)
+          $ 93 "gripper.open()"
+          gripper.open()
+          $ 94 "MoveL"
+          $ 95 "trs4" "breakAfter"
+          movel(trs4, a=1.0, v=3.0)
+        end
+        $ 96 "trs5≔pose_add(路点_8, p[0,0,0.2,0,0,0])"
+        global trs5= pose_add (u36335u28857_8_p, p[0,0,0.2,0,0,0])
+        $ 97 "If n == 5"
+        if (n == 5):
+          $ 98 "MoveL"
+          $ 99 "trs5" "breakAfter"
+          movel(trs5, a=1.0, v=3.0)
+          $ 100 "MoveL"
+          $ 101 "路点_8" "breakAfter"
+          movel(u36335u28857_8_p, a=1.0, v=3.0)
+          $ 102 "gripper.open()"
+          gripper.open()
+          $ 103 "MoveL"
+          $ 104 "trs5" "breakAfter"
+          movel(trs5, a=1.0, v=3.0)
+        end
+        $ 105 "trs6≔pose_add(路点_9, p[0,0,0.2,0,0,0])"
+        global trs6= pose_add (u36335u28857_9_p, p[0,0,0.2,0,0,0])
+        $ 106 "If n == 6"
+        if (n == 6):
+          $ 107 "MoveL"
+          $ 108 "trs6" "breakAfter"
+          movel(trs6, a=1.0, v=3.0)
+          $ 109 "MoveL"
+          $ 110 "路点_9" "breakAfter"
+          movel(u36335u28857_9_p, a=1.0, v=3.0)
+          $ 111 "gripper.open()"
+          gripper.open()
+          $ 112 "MoveL"
+          $ 113 "trs6" "breakAfter"
+          movel(trs6, a=1.0, v=3.0)
+        end
+        $ 114 "trs7≔pose_add(路点_9, p[0,0,0.2,0,0,0])"
+        global trs7= pose_add (u36335u28857_9_p, p[0,0,0.2,0,0,0])
+        $ 115 "If n == 7"
+        if (n == 7):
+          $ 116 "MoveL"
+          $ 117 "trs7" "breakAfter"
+          movel(trs7, a=1.0, v=3.0)
+          $ 118 "MoveL"
+          $ 119 "路点_9" "breakAfter"
+          movel(u36335u28857_9_p, a=1.0, v=3.0)
+          $ 120 "gripper.open()"
+          gripper.open()
+          $ 121 "MoveL"
+          $ 122 "trs7" "breakAfter"
+          movel(trs7, a=1.0, v=3.0)
+        end
+        $ 123 "trs8≔pose_add(路点_11, p[0,0,0.2,0,0,0])"
+        global trs8= pose_add (u36335u28857_11_p, p[0,0,0.2,0,0,0])
+        $ 124 "If n == 8"
+        if (n == 8):
+          $ 125 "MoveL"
+          $ 126 "trs8" "breakAfter"
+          movel(trs8, a=1.0, v=3.0)
+          $ 127 "MoveL"
+          $ 128 "路点_11" "breakAfter"
+          movel(u36335u28857_11_p, a=1.0, v=3.0)
+          $ 129 "gripper.open()"
+          gripper.open()
+          $ 130 "MoveL"
+          $ 131 "trs8" "breakAfter"
+          movel(trs8, a=1.0, v=3.0)
+        end
+        $ 132 "trs9≔pose_add(路点_11, p[0,0,0.2,0,0,0])"
+        global trs9= pose_add (u36335u28857_11_p, p[0,0,0.2,0,0,0])
+        $ 141 "n≔n + 1"
+        global n=n + 1
+      end
+      $ 142 "MoveJ"
+      $ 143 "路点_1" "breakAfter"
+      movej(get_inverse_kin(u36335u28857_1_p, qnear=u36335u28857_1_q), a=1.3962634015954636, v=1.5707963267948966)
+      $ 144 "n≔1"
+      global n=1
+    end
+  end
+end

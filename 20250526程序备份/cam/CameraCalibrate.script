@@ -1,0 +1,1043 @@
+def CameraCalibrate():
+  global _hidden_verificationVariable=0
+  step_count_6e77848f_cc53_4637_af55_891fb930a259 = 0.0
+  thread Step_Counter_Thread_406b501e_d1d1_4a1d_9b71_f9d59a7d78e1():
+    while (True):
+      step_count_6e77848f_cc53_4637_af55_891fb930a259 = step_count_6e77848f_cc53_4637_af55_891fb930a259 + 1.0
+      sync()
+    end
+  end
+  run Step_Counter_Thread_406b501e_d1d1_4a1d_9b71_f9d59a7d78e1()
+  set_standard_analog_input_domain(0, 1)
+  set_standard_analog_input_domain(1, 1)
+  set_tool_analog_input_domain(0, 1)
+  set_tool_analog_input_domain(1, 1)
+  set_analog_outputdomain(0, 0)
+  set_analog_outputdomain(1, 0)
+  set_input_actions_to_default()
+  set_tool_communication(False, 115200, 0, 1, 1.5, 3.5)
+  set_tool_output_mode(0)
+  set_tool_digital_output_mode(0, 1)
+  set_tool_digital_output_mode(1, 1)
+  set_tool_voltage(0)
+  set_target_payload(0.500000, [0.000000, 0.000000, 0.000000], [0.000485, 0.000485, 0.000485, 0.000000, 0.000000, 0.000000])
+  set_tcp(p[0.0,0.0,0.0,0.0,0.0,0.0])
+  set_safety_mode_transition_hardness(1)
+  set_gravity([0.0, 0.0, 9.82])
+  global CameraTemplate=[]
+  global CameraTemplateN=[]
+  # begin: URCap Installation Node
+  #   Source: Robotiq_Grippers, 3.16.0.101933, Robotiq Inc.
+  #   Type: 真空
+  #################################################
+  # Vacuum Grip Check
+  #################################################
+  
+  vacuumGripCheckThread1 = 0
+  vacuumGripCheckThread2 = 0
+  vacuumGripCheckThread3 = 0
+  vacuumGripCheckThread4 = 0
+  vacuumGripCheckThread1Running = False
+  vacuumGripCheckThread2Running = False
+  vacuumGripCheckThread3Running = False
+  vacuumGripCheckThread4Running = False
+  vacuumGripCheckslave_id = 1
+  vacuumGripCheckThreadStarted = False
+  
+  thread vacuumGripCheck():
+    slave_id = vacuumGripCheckslave_id
+    vacuumGripCheckThreadStarted = True
+  
+    while (True):
+      objectDetectedDebounceCtr = 0
+  
+      while (objectDetectedDebounceCtr < 3):
+        if(rq_is_vacuum_obj_detected_by_slave_id(slave_id=9)):
+          objectDetectedDebounceCtr = objectDetectedDebounceCtr + 1
+        else:
+          objectDetectedDebounceCtr = 0
+        end
+        sleep(0.1)
+      end
+  
+      objectNotDetectedDebounceCtr = 0
+  
+      while objectNotDetectedDebounceCtr < 3:
+        if (not rq_is_vacuum_obj_detected_by_slave_id(slave_id=9)):
+          objectNotDetectedDebounceCtr = objectNotDetectedDebounceCtr + 1
+        else:
+          objectNotDetectedDebounceCtr = 0
+        end
+        sleep(0.1)
+      end
+  
+      socket_open("127.0.0.1",29999,"dashboardServerSocket")
+      socket_send_line("pause","dashboardServerSocket")
+      socket_send_string("popup Vacuum grip check has detected an object drop.", "dashboardServerSocket")
+      socket_send_byte(10, "dashboardServerSocket")
+      socket_close("dashboardServerSocket")
+  
+      sleep(0.008)
+    end
+  end
+  
+  def startVacuumGripCheckThread(slave_id=9):
+    vacuumGripCheckslave_id = slave_id
+    threadHandle = run vacuumGripCheck()
+    waitForVacuumGripCheckThreadStarted()
+    return threadHandle
+  end
+  
+  def stopVacuumGripCheckThread(threadHandle):
+    kill threadHandle
+  end
+  
+  def waitForVacuumGripCheckThreadStarted():
+    while (not(vacuumGripCheckThreadStarted)):
+      sleep(0.008)
+    end
+    vacuumGripCheckThreadStarted = False
+  end
+  #################################################
+  # End - Vacuum Grip Check
+  #################################################
+  
+  #################################################
+  # Stops the pump on a distance travelled
+  #################################################
+  global stopPumpDistance = 100
+  global stopPumpslave_id = 0
+  global stopPumpThreadStarted = [False, False, False, False]
+  global stopPumpThreadHandles = [0, 0, 0, 0]
+  
+  thread stopPumpOnDistanceTravelled():
+    distance = stopPumpDistance
+    slave_id = stopPumpslave_id
+    stopPumpThreadStarted[rq_slave_id_to_index(slave_id)] = True
+  
+    measuredDistance = waitForDistanceTravelled(distance)
+  
+    rq_stop(slave_id_to_gripper_socket(slave_id))
+  
+    stopPumpThreadStarted[rq_slave_id_to_index(slave_id)] = False
+  end
+  
+  def waitForDistanceTravelled(distance):
+    startingPose = get_actual_tcp_pose()
+    measuredDistance = 0
+    while (measuredDistance < distance):
+      sleep(0.1)
+      measuredDistance = point_dist(get_actual_tcp_pose(), startingPose)
+    end
+  
+    return measuredDistance
+  end
+  
+  def startStopPumpOnDistanceTravelledThread(distance, slave_id=9):
+    if (stopPumpThreadStarted[rq_slave_id_to_index(slave_id)]):
+      return 0
+    end
+  
+    global stopPumpDistance = distance
+    global stopPumpslave_id = slave_id
+    stopPumpThreadHandles[rq_slave_id_to_index(slave_id)] = run stopPumpOnDistanceTravelled()
+    waitForStopPumpOnDistanceTravelledThreadStarted(slave_id)
+    return stopPumpThreadHandles[rq_slave_id_to_index(slave_id)]
+  end
+  
+  def waitForStopPumpOnDistanceTravelledThreadStarted(slave_id=9):
+    while (not(stopPumpThreadStarted[rq_slave_id_to_index(slave_id)])):
+      sleep(0.008)
+    end
+  end
+  
+  def stopStopPumpOnDistanceTravelledThread(slave_id=9):
+    handle = stopPumpThreadHandles[rq_slave_id_to_index(slave_id)]
+    threadIsRunning = stopPumpThreadStarted[rq_slave_id_to_index(slave_id)]
+    if (threadIsRunning):
+      kill handle
+      stopPumpThreadHandles[rq_slave_id_to_index(slave_id)] = 0
+    end
+  end
+  #################################################
+  # End - Stops the pump on a distance travelled
+  #################################################
+  
+  #################################################
+  # Vacuum general functions
+  #################################################
+  def rq_wait_for_vacuum_object_detected(slave_id=9):
+      while (not rq_is_vacuum_obj_detected_by_slave_id(slave_id)):
+          if (rq_is_vacuum_timeout(slave_id)):
+              return False
+          end
+          sleep(0.008)
+      end
+      return True
+  end
+  
+  def rq_wait_for_vacuum_object_secured(slave_id=9):
+      while (not rq_is_vacuum_obj_secured(slave_id)):
+          if (rq_is_vacuum_timeout(slave_id)):
+              return False
+          end
+          sleep(0.008)
+      end
+      return True
+  end
+  
+  def rq_wait_for_vacuum_object_suction_complete(slave_id=9):
+      remaining_retries = 50
+  
+       # Wait for suction started
+      while (not rq_is_vacuum_obj_in_suction(slave_id) and
+             not rq_is_vacuum_obj_detected_by_slave_id(slave_id) and
+             remaining_retries > 0):
+          sleep(0.01)
+          remaining_retries = remaining_retries - 1
+      end
+  
+      # Wait for suction completed
+      while (rq_is_vacuum_obj_in_suction(slave_id)):
+          if (rq_is_vacuum_timeout(slave_id)):
+              return False
+          end
+          sleep(0.01)
+      end
+  
+      return True
+  end
+  
+  def rq_wait_for_vacuum_object_not_detected(slave_id=9):
+      while (rq_is_vacuum_obj_detected_by_slave_id(slave_id)):
+          sleep(0.01)
+      end
+  end
+  
+  def rq_is_vacuum_obj_detected_by_slave_id(slave_id=9):
+      gOBJ = driver_gripper_client.getObjectDetectionFlag(slave_id)
+      return is_vacuum_OBJ_object_detected(gOBJ)
+  end
+  
+  def rq_is_vacuum_obj_detected(gripper_socket="1"):
+      slave_id = gripper_socket_to_slave_id(gripper_socket)
+      return rq_is_vacuum_obj_detected_by_slave_id(slave_id)
+  end
+  
+  def rq_is_vacuum_obj_secured(slave_id=9):
+      gOBJ = driver_gripper_client.getObjectDetectionFlag(slave_id)
+      return is_vacuum_OBJ_object_secured(gOBJ)
+  end
+  
+  def rq_is_vacuum_obj_in_suction(slave_id=9):
+      gOBJ = driver_gripper_client.getObjectDetectionFlag(slave_id)
+      return is_vacuum_OBJ_object_in_motion(gOBJ)
+  end
+  
+  def rq_is_vacuum_timeout(slave_id=9):
+      gFLT = driver_gripper_client.getFault(slave_id)
+      return gFLT == 6
+  end
+  
+  def is_vacuum_OBJ_object_in_motion(gOBJ):
+      return gOBJ == 0
+  end
+  
+  def is_vacuum_OBJ_object_detected(gOBJ):
+      return gOBJ == 1 or gOBJ == 2
+  end
+  
+  def is_vacuum_OBJ_object_secured(gOBJ):
+      return gOBJ == 2
+  end
+  
+  def rq_set_vacuum_and_wait(pressure, timeout, minimum, advanced_mode, slave_id=9):
+      driver_gripper_client.configureVacuum(slave_id, advanced_mode, pressure, minimum, timeout)
+  end
+  
+  def is_continuous_grip(maximum_vacuum):
+    return maximum_vacuum == 0
+  end
+  
+  def rq_vacuum_release(advanced_mode=False, shutoff_distance_cm=5, wait_for_object_released=True, gripper_socket="1"):
+    rq_wait_for_gripper_reconnection()
+    local slave_id = gripper_socket_to_slave_id(gripper_socket)
+    local shutoff_distance = scale(shutoff_distance_cm, [0, 99], [0.00, 0.99])
+    local pressure = 255
+    local minimum = 0
+    local timeout = 255
+    rq_vacuum_release_raw(advanced_mode, pressure, minimum, timeout, shutoff_distance, wait_for_object_released, slave_id)
+  end
+  
+  def rq_vacuum_release_raw(advanced_mode, pressure, minimum, timeout, shutoff_distance, wait_for_object_released, slave_id):
+    rq_reset_fault_and_activate(slave_id)
+  
+    if advanced_mode:
+      rq_set_vacuum_and_wait(pressure, timeout, minimum, 1, slave_id)
+    else:
+      rq_set_vacuum_and_wait(pressure, timeout, minimum, 0, slave_id)
+    end
+  
+    # The following patch is for Robotiq's Camera issue when communication is lost, but not the activation
+    # the communication driver reset the GTO bit
+    driver_gripper_client.goto(slave_id, 1)
+  
+    if wait_for_object_released:
+      while (rq_is_vacuum_obj_detected_by_slave_id(slave_id)):
+  
+        if advanced_mode:
+          rq_set_vacuum_and_wait(pressure, timeout, minimum, 1, slave_id)
+        else:
+          rq_set_vacuum_and_wait(pressure, timeout, minimum, 0, slave_id)
+        end
+  
+        # The following patch is for Robotiq's Camera issue when communication is lost, but not the activation
+        # the communication driver reset the GTO bit
+        driver_gripper_client.goto(slave_id, 1)
+        sleep(0.01)
+      end
+    end
+  
+    if advanced_mode:
+      startStopPumpOnDistanceTravelledThread(shutoff_distance, slave_id)
+    end
+  end
+  
+  def rq_vacuum_grip(advanced_mode=False, maximum_vacuum=60, minimum_vacuum=40, timeout_ms=3000, wait_for_object_detected=True, gripper_socket="1"):
+    rq_wait_for_gripper_reconnection()
+    local slave_id = gripper_socket_to_slave_id(gripper_socket)
+    local pressure = floor(scale(maximum_vacuum, [0, 100], [100, 0]))
+    local minimum = floor(scale(minimum_vacuum, [0, 100], [100, 0]))
+    local timeout = floor(scale(timeout_ms, [0, 25500], [0, 255]))
+    rq_vacuum_grip_raw(advanced_mode, pressure, minimum, timeout, slave_id)
+    if wait_for_object_detected:
+          suction_completed = rq_wait_for_vacuum_object_suction_complete(slave_id)
+          if(not suction_completed):
+            driver_gripper_client.goto(slave_id, 0)
+          end
+    end
+  end
+  
+  def rq_vacuum_grip_raw(advanced_mode, pressure, minimum, timeout, slave_id):
+    stopStopPumpOnDistanceTravelledThread(slave_id)
+    rq_reset_fault_and_activate(slave_id)
+  
+    if advanced_mode:
+      rq_set_vacuum_and_wait(pressure, timeout, minimum, 1, slave_id)
+    else:
+      rq_set_vacuum_and_wait(pressure, timeout, minimum, 0, slave_id)
+    end
+  
+    driver_gripper_client.goto(slave_id, 1)
+  end
+  
+  def is_FLT_no_fault(gFLT):
+      return gFLT == 0
+  end
+  
+  def is_FLT_vacuum_timeout(gFLT):
+    return gFLT == 6
+  end
+  
+  def is_FLT_faulted(gFLT):
+      return gFLT >= 8
+  end
+  
+  def rq_reset_fault_and_activate(slave_id):
+      gFLT = driver_gripper_client.getFault(slave_id)
+  
+      if(not is_FLT_no_fault(gFLT)):
+          if(is_FLT_vacuum_timeout(gFLT)):
+              driver_gripper_client.goto(slave_id, 0)
+          elif(is_FLT_faulted(gFLT)):
+              driver_gripper_client.goto(slave_id, 0)
+              driver_gripper_client.activate([slave_id])
+          end
+      elif(not rq_is_gripper_activated(slave_id)):
+          driver_gripper_client.goto(slave_id, 0)
+          driver_gripper_client.activate([slave_id])
+      end
+  end
+  #################################################
+  # End - Vacuum general functions
+  #################################################
+    def scale(value, rawRange, scaledRange):
+        def computeSlope(inputRange, outputRange):
+            outputRangeDelta = outputRange[1] - outputRange[0]
+            inputRangeDelta = inputRange[1] - inputRange[0]
+
+            if (inputRangeDelta == 0):
+                return 0
+            else:
+                return outputRangeDelta / inputRangeDelta
+            end
+        end
+
+        def computeIntercept(slope, inputRange, outputRange):
+            return outputRange[0] - (slope * inputRange[0])
+        end
+
+        def clipScaledValue(outputScaledValue, outputRange):
+            if (outputRange[0] < outputRange[1]):
+                return clipWhenLowerLimitIsLessThanHigher(outputScaledValue, outputRange)
+            else:
+                return clipWhenLowerLimitIsGreaterThanHigherLimit(outputScaledValue, outputRange)
+            end
+        end
+
+        def clipWhenLowerLimitIsGreaterThanHigherLimit(outputScaledValue, outputRange):
+            if (outputScaledValue < outputRange[1]):
+                return outputRange[1]
+            elif (outputScaledValue > outputRange[0]):
+                return outputRange[0]
+            else:
+                return outputScaledValue
+            end
+        end
+
+        def clipWhenLowerLimitIsLessThanHigher(outputScaledValue, outputRange):
+            if (outputScaledValue < outputRange[0]):
+                return outputRange[0]
+            elif (outputScaledValue > outputRange[1]):
+                return outputRange[1]
+            else:
+                return outputScaledValue
+            end
+        end
+
+        slope = computeSlope(rawRange, scaledRange)
+        intercept = computeIntercept(slope, rawRange, scaledRange)
+        scaledValue = slope * value + intercept
+        return clipScaledValue(scaledValue, scaledRange)
+    end
+
+    def limit(value, range):
+        return scale(value, range, range)
+    end
+
+  vacuumGripCheckWarningTitle = "真空抓握检查"
+  vacuumGripCheckWarningMessage = "真空机械爪失去物体"
+  vacuumGripTimeoutTitle = "真空机械爪故障"
+  vacuumGripTimeoutMessage = "抓握已经超时"
+  # end: URCap Installation Node
+  # begin: URCap Installation Node
+  #   Source: Robotiq_Grippers, 3.16.0.101933, Robotiq Inc.
+  #   Type: 机械爪
+  RQ_UNIT_PERCENT = 0
+  RQ_UNIT_MM = 1
+  RQ_UNIT_INCH = 2
+  
+  global gripper_reconnecting = False
+  rq_current_limit_enabled = False
+  gripper_closed_norm = [100, 100, 100, 100]
+  gripper_open_norm = [0, 0, 0, 0]
+  gripper_closed_mm = [0, 0, 0, 0]
+  gripper_open_mm = [50, 50, 50, 50]
+  
+  driver_gripper_client = rpc_factory("xmlrpc","http://localhost:63353")
+  
+  def rq_set_force_norm(force_norm, gripper_socket="1"):
+      rq_wait_for_gripper_reconnection()
+      slave_id = gripper_socket_to_slave_id(gripper_socket)
+      rq_set_force_norm_multi_grippers(force_norm, [slave_id])
+  end
+  
+  def rq_set_force_norm_multi_grippers(force_norm, slave_ids=[9]):
+      driver_gripper_client.setForce(slave_ids, force_norm)
+  end
+  
+  def rq_set_speed_norm(speed_norm, gripper_socket="1"):
+      rq_wait_for_gripper_reconnection()
+      slave_id = gripper_socket_to_slave_id(gripper_socket)
+      rq_set_speed_norm_multi_grippers(speed_norm, [slave_id])
+  end
+  
+  def rq_set_speed_norm_multi_grippers(speed_norm, slave_ids=[9]):
+      driver_gripper_client.setSpeed(slave_ids, speed_norm)
+  end
+  
+  def rq_open_and_wait(gripper_socket="1"):
+      rq_wait_for_gripper_reconnection()
+      slave_id = gripper_socket_to_slave_id(gripper_socket)
+      driver_gripper_client.openGripper(slave_id)
+      rq_wait_for_motion_complete([slave_id])
+  end
+  
+  def rq_close_and_wait(gripper_socket="1"):
+      rq_wait_for_gripper_reconnection()
+      slave_id = gripper_socket_to_slave_id(gripper_socket)
+      driver_gripper_client.closeGripper(slave_id)
+      rq_wait_for_motion_complete([slave_id])
+  end
+  
+  def rq_move_norm_multi_grippers(position, slave_ids=[9]):
+     # rq_wait_for_gripper_reconnection fucntion is not called here because it is already done in the gripper contribution
+     # script and this function is not defined for public usage.
+     all_gripper_limits = get_all_gripper_limits(slave_ids)
+     driver_gripper_client.move(slave_ids, position, RQ_UNIT_PERCENT, all_gripper_limits)
+  end
+  
+  def rq_move_and_wait_norm_multi_grippers(position, slave_ids=[9]):
+       all_gripper_limits = get_all_gripper_limits(slave_ids)
+       driver_gripper_client.move(slave_ids, position, RQ_UNIT_PERCENT, all_gripper_limits)
+       rq_wait_for_motion_complete(slave_ids)
+  end
+  
+  def rq_move_and_wait(position, unit, gripper_socket="1"):
+     rq_wait_for_gripper_reconnection()
+     slave_id = gripper_socket_to_slave_id(to_str(gripper_socket))
+     all_gripper_limits = get_all_gripper_limits([slave_id])
+     driver_gripper_client.move([slave_id], position, unit, all_gripper_limits)
+     rq_wait_for_motion_complete([slave_id])
+  end
+  
+  def rq_move_and_wait_norm(position, gripper_socket="1"):
+      rq_move_and_wait(position, RQ_UNIT_PERCENT, gripper_socket)
+  end
+  
+  def rq_move_and_wait_mm(position, gripper_socket="1"):
+      rq_move_and_wait(position, RQ_UNIT_MM, gripper_socket)
+  end
+  
+  def rq_move_and_wait_inches(position, gripper_socket="1"):
+     rq_move_and_wait(position, RQ_UNIT_INCH, gripper_socket)
+  end
+  
+  def rq_is_object_detected(gripper_socket="1"):
+     slave_id = gripper_socket_to_slave_id(gripper_socket)
+     return driver_gripper_client.isObjectDetected(slave_id)
+  end
+  
+  def rq_current_pos_norm(gripper_socket="1"):
+      slave_id = gripper_socket_to_slave_id(gripper_socket)
+      gripper_limits = get_gripper_limits(gripper_socket)
+      return driver_gripper_client.getCurrentPosition(slave_id,
+                                    RQ_UNIT_PERCENT,
+                                    gripper_limits[0],
+                                    gripper_limits[1],
+                                    gripper_limits[2],
+                                    gripper_limits[3])
+  end
+  
+  def rq_current_pos_mm(gripper_socket=1):
+      slave_id = gripper_socket_to_slave_id(to_str(gripper_socket))
+      gripper_limits = get_gripper_limits(to_str(gripper_socket))
+      return driver_gripper_client.getCurrentPosition(slave_id,
+                                    RQ_UNIT_MM,
+                                    gripper_limits[0],
+                                    gripper_limits[1],
+                                    gripper_limits[2],
+                                    gripper_limits[3])
+  end
+  
+  def rq_current_pos_inches(gripper_socket=1):
+      slave_id = gripper_socket_to_slave_id(to_str(gripper_socket))
+      gripper_limits = get_gripper_limits(to_str(gripper_socket))
+      return driver_gripper_client.getCurrentPosition(slave_id,
+                                    RQ_UNIT_INCH,
+                                    gripper_limits[0],
+                                    gripper_limits[1],
+                                    gripper_limits[2],
+                                    gripper_limits[3])
+  end
+  
+  def rq_reset(gripper_socket="1"):
+      slave_id = gripper_socket_to_slave_id(gripper_socket)
+      driver_gripper_client.deactivate([slave_id])
+  end
+  
+  def rq_set_gripper_max_cur(current_mA, gripper_socket="1"):
+      rq_wait_for_gripper_reconnection()
+      slave_id = gripper_socket_to_slave_id(gripper_socket)
+      driver_gripper_client.setMaximumCurrent(current_mA, slave_id)
+  end
+  
+  def rq_get_gripper_max_cur(gripper_socket="1"):
+      slave_id = gripper_socket_to_slave_id(gripper_socket)
+      return driver_gripper_client.getMaximumCurrent(slave_id)
+  end
+  
+  def rq_set_max_current_for_all_grippers():
+      rq_wait_for_gripper_reconnection()
+      driver_gripper_client.setMaximumCurrentOnAllGrippers(rq_current_limit_enabled)
+  end
+  
+  def rq_is_gripper_activated(slave_id=9):
+      return driver_gripper_client.isGripperActivated(slave_id)
+  end
+  
+  def rq_is_gripper_connected(slave_id=9):
+      return driver_gripper_client.isGripperConnected(slave_id)
+  end
+  
+  def rq_get_fault(slave_id=9):
+      return driver_gripper_client.getFault(slave_id)
+  end
+  
+  def rq_activate_and_wait(gripper_socket="1"):
+      slave_id = gripper_socket_to_slave_id(gripper_socket)
+      if (not rq_is_gripper_activated(slave_id)):
+        driver_gripper_client.activate([slave_id])
+      end
+  end
+  
+  def rq_activate_all_grippers(reset=False):
+      empty_array_used_to_act_on_all_grippers = []
+      if (reset):
+        driver_gripper_client.deactivate(empty_array_used_to_act_on_all_grippers)
+        driver_gripper_client.activate(empty_array_used_to_act_on_all_grippers)
+      else:
+        driver_gripper_client.activateIfRequired(empty_array_used_to_act_on_all_grippers)
+      end
+  end
+  
+  def get_closed_norm(gripper_socket):
+      return gripper_closed_norm[rq_gripper_socket_to_index(gripper_socket)]
+  end
+  
+  def get_open_norm(gripper_socket):
+      return gripper_open_norm[rq_gripper_socket_to_index(gripper_socket)]
+  end
+  
+  def get_open_mm(gripper_socket):
+      return gripper_open_mm[rq_gripper_socket_to_index(gripper_socket)]
+  end
+  
+  def get_closed_mm(gripper_socket):
+      return gripper_closed_mm[rq_gripper_socket_to_index(gripper_socket)]
+  end
+  
+  def set_closed_norm(closed_norm, gripper_socket):
+      gripper_closed_norm[rq_gripper_socket_to_index(gripper_socket)] = closed_norm
+  end
+  
+  def set_open_norm(open_norm, gripper_socket):
+      gripper_open_norm[rq_gripper_socket_to_index(gripper_socket)] = open_norm
+  end
+  
+  def set_closed_mm(closed_mm, gripper_socket):
+      gripper_closed_mm[rq_gripper_socket_to_index(gripper_socket)] = closed_mm
+  end
+  
+  def set_open_mm(opened_mm, gripper_socket):
+      gripper_open_mm[rq_gripper_socket_to_index(gripper_socket)] = opened_mm
+  end
+  
+  def slave_id_to_gripper_socket(slave_id):
+      if slave_id == 9:
+          return "1"
+      else:
+          return to_str(slave_id)
+      end
+  end
+  
+  def gripper_socket_to_slave_id(gripper_socket):
+      if gripper_socket == "1":
+          return 9
+      else:
+          return to_num(gripper_socket)
+      end
+  end
+  
+  def rq_slave_id_to_index(slave_id):
+      if slave_id == 9:
+          return 0
+      else:
+          return slave_id - 1
+      end
+  end
+  
+  def rq_gripper_socket_to_index(gripper_socket):
+      return to_num(gripper_socket) - 1
+  end
+  
+  def get_all_gripper_limits(slave_ids):
+     all_gripper_limits = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+     nb_slave_ids = get_list_length(slave_ids)
+     slave_id_index = 0
+     index = 0
+     sub_index = 0
+     while (index < nb_slave_ids):
+         slave_id_index = 0
+         items_per_limit = 4
+         gripper_socket = slave_id_to_gripper_socket(slave_ids[index])
+         gripper_limits = get_gripper_limits(gripper_socket)
+         while (sub_index < items_per_limit):
+            all_gripper_limits[index] = gripper_limits[sub_index]
+            sub_index = sub_index + 1
+            index = index + 1
+         end
+         index = index + 1
+     end
+  
+     return all_gripper_limits
+  end
+  
+  def get_gripper_limits(gripper_socket):
+      return [get_closed_norm(gripper_socket),
+              get_open_norm(gripper_socket),
+              get_closed_mm(gripper_socket),
+              get_open_mm(gripper_socket)]
+  end
+  
+  def rq_wait_for_motion_complete(slave_ids):
+      nb_slave_ids = get_list_length(slave_ids)
+      index = 0
+      while (index < nb_slave_ids):
+        rq_wait(slave_ids[index])
+        index = index + 1
+      end
+  end
+  
+  def rq_stop(gripper_socket="1"):
+      slave_id = gripper_socket_to_slave_id(gripper_socket)
+      driver_gripper_client.goto(slave_id, 0)
+  end
+  
+  def rq_wait(slave_id):
+      # Wait for the gripper motion to complete
+      while (not rq_is_motion_complete(slave_id)):
+          # The following patch is for Robotiq's Camera issue when communication is lost, but not the activation
+          # the communication driver reset the GTO bit
+          driver_gripper_client.goto(slave_id, 1)
+          sleep(0.1)
+      end
+  end
+  
+  def rq_is_motion_complete(slave_id):
+      detection_flag = driver_gripper_client.getObjectDetectionFlag(slave_id)
+      return detection_flag > 0 and detection_flag < 4
+  end
+  
+  def write_error_popup(index, message_part_1, message_part_2, title):
+      popup_message_part_1 = str_cat(message_part_1, index)
+      popup_message_part_2 = str_cat(popup_message_part_1, " ")
+      popup_message = str_cat(popup_message_part_2, message_part_2)
+      return popup(popup_message, title, False, True, True)
+  end
+  
+  def rq_disconnect_grippers():
+      driver_gripper_client.pauseAndDisconnect()
+  end
+  
+  def rq_reconnect_grippers(blocking=False, slave_ids=[]):
+      if blocking:
+          global gripper_reconnecting = True
+          driver_gripper_client.reconnectAndResume(slave_ids)
+          gripper_reconnecting = False
+      else:
+          thread recon_thread():
+              rq_reconnect_grippers(True)
+              return False
+          end
+          thrd = run recon_thread()
+      end
+  end
+  
+  def rq_wait_for_gripper_reconnection(timeout_s = 30.0):
+      while (gripper_reconnecting == True):
+          if (timeout_s <= 0):
+            popup("Gripper has not reconnected before the expected time")
+            halt
+          else:
+            sync()
+            timeout_s = timeout_s - get_steptime()
+          end
+      end
+  end
+  
+  def rq_gripper_allow_tool_com(allow_tool_comm):
+      driver_gripper_client.allowToolComm(allow_tool_comm)
+  end
+  set_closed_norm(100.0, "1")
+  set_open_norm(0.0, "1")
+  set_closed_mm(0.0, "1")
+  set_open_mm(50.0, "1")
+  set_closed_norm(100.0, "2")
+  set_open_norm(0.0, "2")
+  set_closed_mm(0.0, "2")
+  set_open_mm(50.0, "2")
+  set_closed_norm(100.0, "3")
+  set_open_norm(0.0, "3")
+  set_closed_mm(0.0, "3")
+  set_open_mm(50.0, "3")
+  set_closed_norm(100.0, "4")
+  set_open_norm(0.0, "4")
+  set_closed_mm(0.0, "4")
+  set_open_mm(50.0, "4")
+  rq_current_limit_enabled = False
+  # end: URCap Installation Node
+  global home_p=p[.078162230406, -.490218513137, .328716353826, 1.953003109446, 2.460767513402, .000033020857]
+  global home_q=[1.4548307657241821, -1.5237398904613038, 1.9413765112506312, -1.9891754589476527, -1.571228329335348, 1.2286430597305298]
+  global caliP1_p=p[.009395357152, -.490215529418, .328710759189, 1.805516418567, 2.274960095169, .262033870262]
+  global caliP1_q=[1.2547738552093506, -1.5417932079038401, 1.9464376608477991, -1.8851376972594203, -1.29741079012026, 1.0162562131881714]
+  global caliP2_p=p[.009385505813, -.542746865161, .328724139476, 1.882332231767, 2.314141525479, .462120701977]
+  global caliP2_q=[1.293817400932312, -1.3879789871028443, 1.7379687468158167, -1.6846667728819789, -1.3380735556231897, 1.0642428398132324]
+  global caliP3_p=p[.009395056444, -.562886415194, .328708182646, -1.947836921301, -2.347725968272, -.450349658067]
+  global caliP3_q=[1.3324568271636963, -1.3206862968257447, 1.6379335562335413, -1.599623819390768, -1.4951437155352991, 1.139082670211792]
+  global caliP4_p=p[.051659412186, -.562886880953, .328728137610, -1.908311654492, -2.253138481165, -.289093853098]
+  global caliP4_q=[1.4299733638763428, -1.3158299189857026, 1.6368663946734827, -1.6342436275877894, -1.614420239125387, 1.2734994888305664]
+  global caliP5_p=p[.087315619855, -.562898850435, .328725088515, -1.872939650989, -2.176665812742, -.170681436296]
+  global caliP5_q=[1.5109336376190186, -1.301390365963318, 1.6207059065448206, -1.6342712841429652, -1.7084487120257776, 1.3821468353271484]
+  global caliP6_p=p[.208594230286, -.569091747753, .328724807027, -1.760414665131, -1.959038311635, .121664439589]
+  global caliP6_q=[1.7587370872497559, -1.1836463969996949, 1.455637280141012, -1.4780939531377335, -1.940106217061178, 1.7241718769073486]
+  global caliP7_p=p[.213728386824, -.597419589962, .328729637743, -1.705522944354, -1.927157412036, .100312260836]
+  global caliP7_q=[1.7617478370666504, -1.1010499757579346, 1.3276971022235315, -1.3713763517192383, -1.9636171499835413, 1.7292817831039429]
+  global caliP8_p=p[-.143968656699, -.435620060164, .202030026528, -.434933755516, 2.651857418534, .504204238547]
+  global caliP8_q=[-1.660465803909151, -1.7952082337199267, -2.019999924529614, -1.3677323531483463, 1.8653930038926554, -0.4859013761389228]
+  global caliP9_p=p[-.034347027755, -.441211972109, .293646876632, 1.798299717774, 2.200094456617, .056597546372]
+  global caliP9_q=[1.1140422821044922, -1.6359583340086878, 2.1749332586871546, -2.1416379414000453, -1.2708080450641077, 0.9213107824325562]
+  global caliP10_p=p[-.003350803152, -.416173835058, .293660460643, 1.742275085433, 2.170458400337, -.118319965415]
+  global caliP10_q=[1.1535018682479858, -1.7150174580016078, 2.293786589299337, -2.3298169575133265, -1.250930134450094, 0.96723473072052]
+  global caliP11_p=p[.058769938617, -.416170148998, .293653427673, 1.802823661368, 2.325949466156, -.352037788170]
+  global caliP11_q=[1.3728998899459839, -1.68554749111318, 2.2961745897876185, -2.4745780430235804, -1.5190327803241175, 1.1309192180633545]
+  global caliP12_p=p[.151883706345, -.416164180109, .293637594344, -1.786234340874, -2.418979241333, .647291796278]
+  global caliP12_q=[1.6895992755889893, -1.587867876092428, 2.2160590330706995, -2.4727703533568324, -1.9067490736590784, 1.3465927839279175]
+  global caliP13_p=p[.250209678944, -.538007503275, .293738587179, -1.639551859668, -2.096598076168, .259458633952]
+  global caliP13_q=[1.8477799892425537, -1.2010460954955597, 1.594452206288473, -1.6803175411620082, -1.9952157179461878, 1.6690728664398193]
+  global caliP14_p=p[.250210314240, -.507866584574, .293734388860, -1.700661288426, -2.115713162055, .378843284500]
+  global caliP14_q=[1.8667612075805664, -1.274531440143921, 1.7186530272113245, -1.8226853809752406, -2.020785633717672, 1.6972659826278687]
+  global caliP15_p=p[.250214180347, -.494194161740, .293718667688, -1.739369668626, -2.125722933575, .458421896772]
+  global caliP15_q=[1.8772300481796265, -1.3080468338778992, 1.7801631132708948, -1.911138196984762, -2.0399368445025843, 1.7124617099761963]
+  $ 2 "机器人程序"
+  $ 3 "脚本: camera.script"
+  
+  
+  
+  
+  
+  def CameraOpenSock(ip, port=8888):
+    socket_open(ip, port, "socker_camera")
+  end
+  
+  
+  def CameraCloseSock():
+    socket_close("socker_camera")
+  end
+  
+  
+  def CameraSwitchOnline():
+    socket_send_string("2\r", "socker_camera")
+    ret = socket_read_string("socker_camera", suffix="\r")
+    if (ret == "-1"):
+      popup("CameraSwitchOnline Error", title="2.5D Camera", blocking=True)
+    elif (ret == ""):
+      popup("CameraSwitchOnline Error | Recv Data is None", title="2.5D Camera", blocking=True)
+    end
+  end
+  
+  
+  def CameraStartCalibrate():
+    socket_send_string("3\r", "socker_camera")
+    ret = socket_read_string("socker_camera", suffix="\r")
+    if (ret == "-1"):
+      popup("CameraStartCalibrate Error", title="2.5D Camera", blocking=True)
+    elif (ret == ""):
+      popup("CameraStartCalibrate Error | Recv Data is None", title="2.5D Camera", blocking=True)
+    end
+  end
+  
+  def format03f(num):
+    s = to_str(num)
+    index = str_find(s, ".")
+    if index != -1:
+      ret = str_sub(s,0, index + 3)
+      return ret
+    else:
+      return "rt"
+    end
+  end
+  
+  def CameraPackPose(pose):
+    ret = ["", "", "", "", "", ""]
+    pose[0] = pose[0] * 1000
+    pose[1] = pose[1] * 1000
+    pose[2] = pose[2] * 1000
+    rpy = rotvec2rpy([pose[3], pose[4], pose[5]])
+    ret[0] = format03f(pose[0])
+    ret[1] = format03f(pose[1])
+    ret[2] = format03f(pose[2])
+    ret[3] = format03f(r2d(rpy[0]))
+    ret[4] = format03f(r2d(rpy[1]))
+    ret[5] = format03f(r2d(rpy[2]))
+    i = 0
+    out = ""
+    while i < 6:
+      out = str_cat(str_cat(out, ret[i]), ",")
+      i = i + 1
+    end
+  
+    return out
+  end
+  
+  def CameraUnpackPose(text):
+    ret = [0, 0, 0, 0, 0, 0, 0]
+    i = 0
+    index = 1
+    while 1:
+      index = str_find(text, ",")
+      if index == -1:
+        ret[i] = to_num(str_sub(text, 0))
+      else:
+        ret[i] = to_num(str_sub(text, 0, index))
+      end
+      text = str_sub(text, index+1)
+      i=i+1
+      if i > 6:
+        break
+      end
+    end
+    return ret
+  end
+  
+  def CameraCalibrate(pose, num):
+  
+    pose1 = CameraPackPose(pose)
+    sendStr = str_cat("", pose1)
+    sendStr = str_cat("4,", sendStr)
+    sendStr = str_cat(sendStr, to_str(num))
+    sendStr = str_cat(sendStr, "\r")
+    socket_send_string(sendStr, "socker_camera")
+    ret = socket_read_string("socker_camera", suffix="\r")
+    if (ret == "-1"):
+      popup("CameraCalibrate Error", title="2.5D Camera", blocking=True)
+    elif (ret == ""):
+      popup("CameraCalibrate Error | Recv Data is None", title="2.5D Camera", blocking=True)
+    end
+  end
+  
+  
+  def CameraEndCalibrate():
+    socket_send_string("5\r", "socker_camera")
+    ret = socket_read_string("socker_camera", suffix="\r")
+    if (ret == "-1"):
+      popup("CameraEndCalibrate Error", title="2.5D Camera", blocking=True)
+    elif (ret == ""):
+      popup("CameraEndCalibrate Error | Recv Data is None", title="2.5D Camera", blocking=True)
+    end
+  end
+  
+  
+  def CameraGetCalibrateResult():
+  
+    socket_send_string("6\r")
+    ret = socket_read_string("socker_camera", suffix="\r")
+    if (ret == "-1"):
+      popup("CameraGetCalibrateResult Error", title="2.5D Camera", blocking=True)
+    elif (ret == ""):
+      popup("CameraGetCalibrateResult Error | Recv Data is None", title="2.5D Camera", blocking=True)
+    end
+  end
+  
+  def CameraGetMarkPose():
+    socket_send_string("1\r")
+    ret = socket_read_string("socker_camera", suffix="\r")
+    if (ret == "-1"):
+      popup("CameraGetMarkPose Error", title="2.5D Camera", blocking=True)
+    elif (ret == ""):
+      popup("CameraGetMarkPose Error | Recv Data is None", title="2.5D Camera", blocking=True)
+    else:
+      result = CameraUnpackPose(ret)
+      x = result[1] / 1000
+      y = result[2] / 1000
+      z = result[3] / 1000
+      rx = d2r(result[4])
+      ry = d2r(result[5])
+      rz = d2r(result[6])
+      rotvec2rpy = rpy2rotvec([rx, ry, rz])
+      return [x, y, z, rotvec2rpy[0], rotvec2rpy[1], rotvec2rpy[2]]
+    end
+  end
+  
+  
+  def CameraSaveTemplate(boardPose, tool=get_actual_tcp_pose()):
+    # global CameraTemplate
+    CameraTemplate = pose_trans(tool, boardPose)
+    return CameraTemplate
+  end
+  
+  def CameraTrsf(t, nT, p, tool=get_actual_tcp_pose()):
+    trsf = pose_trans(pose_inv(t), p)
+    ret = pose_trans(nT, trsf)
+    return ret
+  end
+  $ 4 "CameraOpenSock('192.168.1.99', 8888)"
+  CameraOpenSock("192.168.1.99", 8888)
+  $ 5 "CameraStartCalibrate()"
+  CameraStartCalibrate()
+  $ 6 "MoveJ"
+  $ 7 "home" "breakAfter"
+  movej(get_inverse_kin(home_p, qnear=home_q), a=1.3962634015954636, v=1.0471975511965976)
+  $ 8 "CameraCalibrate(get_actual_tcp_pose(),1)"
+  CameraCalibrate( get_actual_tcp_pose (),1)
+  $ 9 "MoveJ"
+  $ 10 "caliP1" "breakAfter"
+  movej(get_inverse_kin(caliP1_p, qnear=caliP1_q), a=1.3962634015954636, v=1.0471975511965976)
+  $ 11 "CameraCalibrate(get_actual_tcp_pose(),2)"
+  CameraCalibrate( get_actual_tcp_pose (),2)
+  $ 12 "caliP2" "breakAfter"
+  movej(get_inverse_kin(caliP2_p, qnear=caliP2_q), a=1.3962634015954636, v=1.0471975511965976)
+  $ 13 "CameraCalibrate(get_actual_tcp_pose(),3)"
+  CameraCalibrate( get_actual_tcp_pose (),3)
+  $ 14 "caliP3" "breakAfter"
+  movej(get_inverse_kin(caliP3_p, qnear=caliP3_q), a=1.3962634015954636, v=1.0471975511965976)
+  $ 15 "CameraCalibrate(get_actual_tcp_pose(),4)"
+  CameraCalibrate( get_actual_tcp_pose (),4)
+  $ 16 "caliP4" "breakAfter"
+  movej(get_inverse_kin(caliP4_p, qnear=caliP4_q), a=1.3962634015954636, v=1.0471975511965976)
+  $ 17 "CameraCalibrate(get_actual_tcp_pose(),5)"
+  CameraCalibrate( get_actual_tcp_pose (),5)
+  $ 18 "caliP5" "breakAfter"
+  movej(get_inverse_kin(caliP5_p, qnear=caliP5_q), a=1.3962634015954636, v=1.0471975511965976)
+  $ 19 "CameraCalibrate(get_actual_tcp_pose(),6)"
+  CameraCalibrate( get_actual_tcp_pose (),6)
+  $ 20 "caliP6" "breakAfter"
+  movej(get_inverse_kin(caliP6_p, qnear=caliP6_q), a=1.3962634015954636, v=1.0471975511965976)
+  $ 21 "CameraCalibrate(get_actual_tcp_pose(),7)"
+  CameraCalibrate( get_actual_tcp_pose (),7)
+  $ 22 "caliP7" "breakAfter"
+  movej(get_inverse_kin(caliP7_p, qnear=caliP7_q), a=1.3962634015954636, v=1.0471975511965976)
+  $ 23 "CameraCalibrate(get_actual_tcp_pose(),8)"
+  CameraCalibrate( get_actual_tcp_pose (),8)
+  $ 24 "caliP8" "breakAfter"
+  movej(get_inverse_kin(caliP8_p, qnear=caliP8_q), a=1.3962634015954636, v=1.0471975511965976)
+  $ 25 "CameraCalibrate(get_actual_tcp_pose(),9)"
+  CameraCalibrate( get_actual_tcp_pose (),9)
+  $ 26 "caliP9" "breakAfter"
+  movej(get_inverse_kin(caliP9_p, qnear=caliP9_q), a=1.3962634015954636, v=1.0471975511965976)
+  $ 27 "CameraCalibrate(get_actual_tcp_pose(),10)"
+  CameraCalibrate( get_actual_tcp_pose (),10)
+  $ 28 "caliP10" "breakAfter"
+  movej(get_inverse_kin(caliP10_p, qnear=caliP10_q), a=1.3962634015954636, v=1.0471975511965976)
+  $ 29 "CameraCalibrate(get_actual_tcp_pose(),11)"
+  CameraCalibrate( get_actual_tcp_pose (),11)
+  $ 30 "caliP11" "breakAfter"
+  movej(get_inverse_kin(caliP11_p, qnear=caliP11_q), a=1.3962634015954636, v=1.0471975511965976)
+  $ 31 "CameraCalibrate(get_actual_tcp_pose(),12)"
+  CameraCalibrate( get_actual_tcp_pose (),12)
+  $ 32 "caliP12" "breakAfter"
+  movej(get_inverse_kin(caliP12_p, qnear=caliP12_q), a=1.3962634015954636, v=1.0471975511965976)
+  $ 33 "CameraCalibrate(get_actual_tcp_pose(),13)"
+  CameraCalibrate( get_actual_tcp_pose (),13)
+  $ 34 "caliP13" "breakAfter"
+  movej(get_inverse_kin(caliP13_p, qnear=caliP13_q), a=1.3962634015954636, v=1.0471975511965976)
+  $ 35 "CameraCalibrate(get_actual_tcp_pose(),14)"
+  CameraCalibrate( get_actual_tcp_pose (),14)
+  $ 36 "caliP14" "breakAfter"
+  movej(get_inverse_kin(caliP14_p, qnear=caliP14_q), a=1.3962634015954636, v=1.0471975511965976)
+  $ 37 "CameraCalibrate(get_actual_tcp_pose(),15)"
+  CameraCalibrate( get_actual_tcp_pose (),15)
+  $ 38 "caliP15" "breakAfter"
+  movej(get_inverse_kin(caliP15_p, qnear=caliP15_q), a=1.3962634015954636, v=1.0471975511965976)
+  $ 39 "CameraCalibrate(get_actual_tcp_pose(),16)"
+  CameraCalibrate( get_actual_tcp_pose (),16)
+  $ 40 "MoveJ"
+  $ 41 "home" "breakAfter"
+  movej(get_inverse_kin(home_p, qnear=home_q), a=1.3962634015954636, v=1.0471975511965976)
+  $ 42 "CameraEndCalibrate()"
+  CameraEndCalibrate()
+  $ 43 "CameraTemplate≔CameraSaveTemplate(CameraGetMarkPose())"
+  global CameraTemplate=CameraSaveTemplate(CameraGetMarkPose())
+  $ 44 "CameraCloseSock()"
+  CameraCloseSock()
+end

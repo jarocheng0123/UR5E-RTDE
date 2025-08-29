@@ -1,0 +1,43 @@
+def unnamed():
+  global _hidden_verificationVariable=0
+  set_target_payload(1.500000, [0.001000, -0.003000, 0.050000], [0.003026, 0.003026, 0.003026, 0.000000, 0.000000, 0.000000])
+  set_tcp(p[-1.7E-4,0.0,0.19294999999999998,0.0,0.0,0.0])
+  set_tool_communication(True, 115200, 0, 1, 1.5, 3.5)
+  set_tool_output_mode(0)
+  set_tool_digital_output_mode(0, 1)
+  set_tool_digital_output_mode(1, 1)
+  set_tool_voltage(24)
+  set_standard_analog_input_domain(0, 1)
+  set_standard_analog_input_domain(1, 1)
+  set_tool_analog_input_domain(0, 1)
+  set_tool_analog_input_domain(1, 1)
+  set_analog_outputdomain(0, 1)
+  set_analog_outputdomain(1, 0)
+  set_input_actions_to_default()
+  set_tool_digital_input_action(0, "freedrive")
+  set_gravity([0.0, 0.0, 9.82])
+  set_safety_mode_transition_hardness(0)
+  global i_var_1=p[0.31, 0, 0, 0, 0, 0]
+  global u24179u38754_1=p[0.0,0.0,0.0,0.0,0.0,0.0]
+  global u24179u38754_2=p[0.2,0.6,0.4,-1.4839444017850547,-0.07419722008925289,-2.225916602677581]
+  global u24179u38754_3=p[0.1459477485431481,-0.10308445883660293,0.13857682671027435,-0.008977024873201634,0.014216906208388691,-2.4400986907073663]
+  global u28857_1=p[0.10203918836050063,-0.5259531579406657,0.376430278847906,-0.18768520041296463,-3.1325095402283982,-0.09669790600413578]
+  global u28857_2=p[0.0665007526844362,-0.3872123180436422,0.638459113340625,-0.320095108678139,-2.6903368475934015,1.4700117755369673]
+  global u30452u32447_1=p[0.0,0.0,0.0,0.0,0.0,0.0]
+  step_count_b4d2483f_8893_49b8_936f_64b158deedd3 = 0.0
+  thread Step_Counter_Thread_a2b80ebc_5de6_4f94_bd03_a8c00072d35d():
+    while (True):
+      step_count_b4d2483f_8893_49b8_936f_64b158deedd3 = step_count_b4d2483f_8893_49b8_936f_64b158deedd3 + 1.0
+      sync()
+    end
+  end
+  run Step_Counter_Thread_a2b80ebc_5de6_4f94_bd03_a8c00072d35d()
+  while (True):
+    $ 2 "机器人程序"
+    $ 3 "循环"
+    while (True):
+      $ 4 "var_1≔read_port_register(7)"
+      global var_1= read_port_register (7)
+    end
+  end
+end

@@ -1,0 +1,51 @@
+ 程序
+   变量设置
+   机器人程序
+     usb = rpc_factory("xmlrpc","http://192.168.1.7:9120/RPC2")
+     usb.open()
+     弹出窗口: 1
+     pos≔30.86
+     usb.close( True ,pos)
+     弹出窗口: 1
+     '1'
+     等待: 6.15
+     pos≔pos+1
+     usb.close( True ,pos)
+     '2'
+     等待: 0.05
+     pos≔pos+1
+     usb.close( True ,pos)
+     '3'
+     等待: 0.05
+     pos≔pos+1
+     usb.close( True ,pos)
+     '4'
+     等待: 0.41
+     pos≔pos+1
+     usb.close( True ,pos)
+     '5'
+     等待: 0.66
+     pos≔pos+1
+     usb.close( True ,pos)
+     '6'
+     等待: 0.04
+     pos≔pos+1
+     usb.close( True ,pos)
+     '7'
+     等待: 2.12
+     pos≔pos+1
+     usb.close( True ,pos)
+     '8'
+     等待: 2.57
+     弹出窗口: 1
+     pos≔pos+1
+     usb.close( True ,pos)
+     '9'
+     等待: 0.04
+     pos≔pos+1
+     usb.close( True ,pos)
+     '10'
+     等待: 0.34
+     pos≔pos+1
+     usb.close( True ,pos)
+     弹出窗口: 2

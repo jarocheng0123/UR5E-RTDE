@@ -1,0 +1,184 @@
+ 程序
+   变量设置
+   机器人程序
+     'qqqqq≔[1,2,3,4,5,6]'
+     var_1≔路点_4
+     var_2≔路点_2
+     var_3≔路点_5
+     var_4≔路点_6
+     var_5≔路点_8
+     var_6≔路点_9
+     var_7≔路点_11
+     tcp≔[var_1,var_2,var_3,var_4,var_5,var_6,var_7]
+     弹出窗口: step
+     n≔0
+     step≔n
+     弹出窗口: step
+     MoveJ
+       'var_8≔p[0,0,0,0,0,0]'
+       'var_9≔pose_add(tcp[step], var_8)'
+       var_9≔tcp[step]
+       var_9
+     '弹出窗口: 111111111111'
+     MoveJ
+       路点_1
+     vision = rpc_factory("xmlrpc","http://192.168.1.7:9121/RPC2")
+     gripper = rpc_factory("xmlrpc","http://192.168.1.7:9120/RPC2")
+     gripper.open()
+     '等待: 1.0'
+     'usb.adaptiveClose()'
+     '中止'
+     n≔1
+     循环
+       MoveJ
+         路点_1
+       弹出窗口: photo
+       trszzz≔0.06
+       campose≔get_actual_tcp_pose()
+       'USB'
+       'vision.take_photo(campose)'
+       take≔ True 
+       循环 take== True 
+         photo≔vision.take_photo(campose)
+         If photo≠ True 
+           弹出窗口: continues?
+         Else
+           take≔ False 
+       'USB'
+       articlenum≔vision.get_obj_num()
+       弹出窗口: 123
+       循环 n≤articlenum
+         'obj_num≔获取整数'
+         obj_num≔n
+         '弹出窗口: 12'
+         pose≔p[0.0,0.0,0.0,2.221,2.221,0.004]
+         'var_2 = move.move_pose(obj_num)'
+         var_2≔vision.get_obj_pose(obj_num)
+         弹出窗口
+         'var_2 = move.move_pose(n)'
+         pose[0]=var_2[0]
+         pose[1]=var_2[1]
+         pose[2]=var_2[2]+0.05
+         pose[3]=var_2[3]
+         pose[4]=var_2[4]
+         pose[5]=var_2[5]
+         弹出窗口
+         MoveL
+           pose
+         pose[2]=var_2[2] - 0.035
+         If pose[2] ≥ 0.003
+           MoveL
+             pose
+             gripper.adaptiveClose()
+         ElseIf pose[2] < 0.003
+           pose[2] = 0.003
+           MoveL
+             pose
+             gripper.adaptiveClose()
+         'Else'
+         弹出窗口
+         h1≔pose
+         'MoveL'
+         'gripper.adaptiveClose()'
+         pose[2]=var_2[2] + trszzz
+         'pose[2]=var_2[2] + 0.1'
+         MoveL
+           pose
+         'MoveJ'
+         trs1≔pose_add(路点_4, p[0,0,trszzz,0,0,0])
+         'trs1≔pose_add(路点_4, p[0,0,0.2,0,0,0])'
+         tar1≔pose_add(路点_4, p[0,0,h1[2],0,0,0])
+         弹出窗口
+         'tar1≔路点_4'
+         'tar1[2]=h1[2]'
+         If n == 1
+           MoveL
+             trs1
+           MoveL
+             弹出窗口
+             tar1
+             弹出窗口: 1111111111
+             If 0
+               路点_4
+             弹出窗口: 000000
+             '路点_4'
+             gripper.open()
+           MoveL
+             trs1
+         trs2≔pose_add(路点_2, p[0,0,trszzz,0,0,0])
+         'trs2≔pose_add(路点_2, p[0,0,0.2,0,0,0])'
+         If n == 2
+           MoveL
+             trs2
+           MoveL
+             路点_2
+             gripper.open()
+           MoveL
+             trs2
+         trs3≔pose_add(路点_5, p[0,0,trszzz,0,0,0])
+         'trs3≔pose_add(路点_5, p[0,0,0.2,0,0,0])'
+         If n == 3
+           MoveL
+             trs3
+           MoveL
+             路点_5
+             gripper.open()
+           MoveL
+             trs3
+         trs4≔pose_add(路点_6, p[0,0,trszzz,0,0,0])
+         'trs4≔pose_add(路点_6, p[0,0,0.2,0,0,0])'
+         If n == 4
+           MoveL
+             trs4
+           MoveL
+             路点_6
+             gripper.open()
+           MoveL
+             trs4
+         trs5≔pose_add(路点_8, p[0,0,trszzz,0,0,0])
+         'trs5≔pose_add(路点_8, p[0,0,0.2,0,0,0])'
+         If n == 5
+           MoveL
+             trs5
+           MoveL
+             路点_8
+             gripper.open()
+           MoveL
+             trs5
+         trs6≔pose_add(路点_9, p[0,0,trszzz,0,0,0])
+         'trs6≔pose_add(路点_9, p[0,0,0.2,0,0,0])'
+         If n == 6
+           MoveL
+             trs6
+           MoveL
+             路点_9
+             gripper.open()
+           MoveL
+             trs6
+         trs7≔pose_add(路点_9, p[0,0,trszzz,0,0,0])
+         'trs7≔pose_add(路点_9, p[0,0,0.2,0,0,0])'
+         If n == 7
+           MoveL
+             trs7
+           MoveL
+             路点_9
+             gripper.open()
+           MoveL
+             trs7
+         trs8≔pose_add(路点_11, p[0,0,trszzz,0,0,0])
+         'trs8≔pose_add(路点_11, p[0,0,0.2,0,0,0])'
+         If n == 8
+           MoveL
+             trs8
+           MoveL
+             路点_11
+             gripper.open()
+           MoveL
+             trs8
+         trs9≔pose_add(路点_11, p[0,0,trszzz,0,0,0])
+         'trs9≔pose_add(路点_11, p[0,0,0.2,0,0,0])'
+         'If n == 9'
+         n≔n + 1
+       MoveJ
+         路点_1
+         n≔1

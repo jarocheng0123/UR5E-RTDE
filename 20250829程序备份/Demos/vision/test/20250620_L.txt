@@ -1,0 +1,104 @@
+ 程序
+   变量设置
+   机器人程序
+     'set tcp'
+     If  False 
+       'begin'
+       MoveJ
+         路点_1
+         注释
+         yuang
+         注释
+       'target'
+       MoveJ
+         路点_4
+         注释
+         路点_44
+         注释
+         路点_2
+         路点_5
+         路点_6
+         路点_8
+         路点_9
+         路点_11
+     '########'
+     'set var'
+     begin_pos≔路点_1
+     h_up≔0.1
+     var_1≔路点_2
+     var_2≔路点_4
+     var_3≔路点_5
+     var_4≔路点_6
+     var_5≔路点_8
+     var_6≔路点_11
+     var_7≔路点_9
+     tcp≔[var_1,var_2,var_3,var_4,var_5,var_6,var_7]
+     '##########'
+     'run'
+     MoveJ
+       begin_pos
+     vision = rpc_factory("xmlrpc","http://192.168.1.7:9121/RPC2")
+     gripper = rpc_factory("xmlrpc","http://192.168.1.7:9120/RPC2")
+     gripper.open()
+     循环
+       n≔0
+       MoveJ
+         begin_pos
+       弹出窗口: photo
+       campose≔get_actual_tcp_pose()
+       take≔ True 
+       循环 take== True 
+         photo≔vision.take_photo(campose)
+         If photo≠ True 
+           弹出窗口: continues?
+         Else
+           take≔ False 
+       articlenum≔vision.get_obj_num()
+       弹出窗口: articlenum
+       'mode≔0'
+       If articlenum>7
+         弹出窗口: over max obj
+         'mode≔1'
+       循环 n<articlenum
+         obj_num≔n
+         pose≔p[0.0,0.0,0.0,2.221,2.221,0.004]
+         obj_pose≔vision.get_obj_pose(obj_num)
+         pose[0]=obj_pose[0]
+         pose[1]=obj_pose[1]
+         'pose[2]=obj_pose[2]+0.025'
+         pose[2]=obj_pose[2]+0.15
+         pose[3]=obj_pose[3]
+         pose[4]=obj_pose[4]
+         pose[5]=obj_pose[5]
+         MoveL
+           pose
+         'MoveJ'
+         pose[2]=obj_pose[2] - 0.06
+         If pose[2]<0.003
+           pose[2] = 0.003
+         MoveL
+           pose
+           gripper.adaptiveClose()
+         first_pose≔pose
+         pose[2]=h_up
+         MoveL
+           pose
+         '###########'
+         target_pose≔tcp[n]
+         target_pose[2]=first_pose[2]
+         down_pose≔pose
+         down_pose[0]=target_pose[0]
+         down_pose[1]=target_pose[1]
+         down_pose[2]=target_pose[2]+h_up
+         MoveL
+           down_pose
+         MoveL
+           target_pose
+           gripper.open()
+         down_pose[3]=2.221
+         down_pose[4]=2.221
+         down_pose[5]=0.004
+         MoveL
+           down_pose
+         n≔n + 1
+     '########################'

@@ -1,0 +1,18 @@
+ 程序
+   变量设置
+   机器人程序
+     MoveJ
+       home90
+       路点_hometool
+       路点_tool3cm
+       路点_tool
+       '弹出窗口: 3cm'
+       poseget≔路点_toolget_actual_tcp_pose()
+       zz3cm≔p[0,0,0.03,0,0,0]
+       pose≔pose_add(路点_tool, zz3cm)
+       pose
+       MoveL
+         路点_tool3cm
+         等待: 1.0
+       MoveL
+         路点_tool
