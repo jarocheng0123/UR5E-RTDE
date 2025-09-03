@@ -1,8 +1,0 @@
- 程序
-   变量设置
-   机器人程序
-     set_digital_out(0, True )
-     弹出窗口: True
-     等待: 5.0
-     set_digital_out(0, False )
-     弹出窗口: False

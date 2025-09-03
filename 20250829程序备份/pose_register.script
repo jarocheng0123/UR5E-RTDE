@@ -1,6 +1,0 @@
-tmp[0]=read_input_float_register(0)
-tmp[1]=read_input_float_register(1)
-tmp[2]=read_input_float_register(2)
-tmp[3]=read_input_float_register(3)
-tmp[4]=read_input_float_register(4)
-tmp[5]=read_input_float_register(5)
