@@ -4,8 +4,8 @@ import socket
 import time
 
 # 机器人地址（IP+端口）
-ROBOT_ADDR = ("192.168.1.103", 30002)  # 实际机器
-# ROBOT_ADDR = ("0.0.0.0", 30002)  # 仿真环境
+# ROBOT_ADDR = ("192.168.1.103", 30002)  # 实际机器
+ROBOT_ADDR = ("0.0.0.0", 30002)  # 仿真环境
 
 # 目标DO端口
 DO_PORT = 4

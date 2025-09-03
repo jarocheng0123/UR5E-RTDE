@@ -1,10 +1,12 @@
 # 实时数据交换接口，30004 作为 RTDE 的默认端口，被ur-rtde库内置
 
+# sudo pip3 install ur-rtde
+
 import rtde_receive
 import rtde_control
 
-ROBOT_IP = "192.168.1.103"  # 实际机器
-# ROBOT_IP = "0.0.0.0"      # 仿真环境
+# ROBOT_IP = "192.168.1.103"  # 实际机器
+ROBOT_IP = "0.0.0.0"      # 仿真环境
 
 def rtde_control_simple():
     try:

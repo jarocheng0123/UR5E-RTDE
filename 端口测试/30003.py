@@ -1,11 +1,9 @@
-# 控制IO并获取执行状态
-
 import socket
 import time
 
-# 机器人地址（IP+端口）
-ROBOT_ADDR = ("192.168.1.103", 30003)  # 实际机器
-# ROBOT_ADDR = ("0.0.0.0", 30003)  # 仿真环境
+# 机器人地址（IP+30003端口）
+# ROBOT_ADDR = ("192.168.1.103", 30003)  # 实际机器
+ROBOT_ADDR = ("0.0.0.0", 30003)  # 仿真环境
 
 # 目标DO端口
 DO_PORT = 4
@@ -20,9 +18,10 @@ with socket.socket() as s:
     print(f"DO{DO_PORT} 已设为高电平")
     time.sleep(1)
     
-    # 验证高电平状态
+    # 关键修复：解码时忽略无效字符
     s.send(f"get_digital_out({DO_PORT})\n".encode('utf-8'))
-    print(f"DO{DO_PORT} 状态验证: {s.recv(1024).decode().strip()}")
+    response = s.recv(1024).decode('utf-8', errors="ignore").strip()
+    print(f"DO{DO_PORT} 状态验证: {response}")
     time.sleep(4)
     
     # 设置低电平
@@ -30,7 +29,8 @@ with socket.socket() as s:
     print(f"DO{DO_PORT} 已设为低电平")
     time.sleep(1)
     
-    # 验证低电平状态
+    # 解码修复
     s.send(f"get_digital_out({DO_PORT})\n".encode('utf-8'))
-    print(f"DO{DO_PORT} 状态验证: {s.recv(1024).decode().strip()}")
+    response = s.recv(1024).decode('utf-8', errors="ignore").strip()
+    print(f"DO{DO_PORT} 状态验证: {response}")
     time.sleep(4)
