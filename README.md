@@ -1,3 +1,18 @@
+# UR机器人核心端口定义
+
+| 端口号 | 官方名称                | 核心功能                                                                 | 典型用途场景                     |
+|--------|-------------------------|--------------------------------------------------------------------------|----------------------------------|
+| 22     | SSH                     | 远程登录机器人系统（如通过终端操作UR的Linux系统）                         | 查看日志、修改系统配置           |
+| 80     | HTTP                    | 机器人Web控制台（通过浏览器访问`http://机器人IP`）                        | 手动操作机器人、配置网络、升级固件 |
+| 30001  | Real-Time Data Output   | 实时数据输出（10Hz频率，推送机器人状态）                                 | 读取关节角度、TCP位置、IO状态等   |
+| 30002 | Primary Client Interface | 主客户端接口，仅接收URScript指令（无返回）                         | 下发运动指令、控制IO、调用程序    |
+| 30003  | Secondary Client Interface | 次客户端接口，接收URScript并返回执行结果                             | 下发指令并获取执行状态（如是否完成） |
+| 30004  | RTDE                    | 实时数据交换接口（更高频率，可配置数据项）                               | 高精度实时控制（如力控、视觉引导） |
+| 30005  | FTP                     | 文件传输协议端口，用于上传/下载UR程序（.urp文件）                        | 批量部署机器人程序               |
+| 50001  | Dashboard Server        | 机器人面板控制接口，用于远程启动/停止程序、解锁机器人等                   | 自动化流程中控制机器人运行状态    |
+
+
+
 [优傲机器人 RTDE C++ 接口](https://sdurobotics.gitlab.io/ur_rtde/index.html#)
 [RTDE客户端库和示例](https://github.com/UniversalRobots/RTDE_Python_Client_Library)
 [实时数据交换 （RTDE） 指南](https://docs.universal-robots.com/tutorials/communication-protocol-tutorials/rtde-guide.html)
@@ -5,7 +20,32 @@
 
 
 
+# 查看所有监听的TCP/UDP端口（类似netstat -tuln）
+ss -tuln
 
+# 查看所有端口及进程信息（需root权限，类似netstat -tulnp）
+sudo ss -tulnp
+
+UR 机器人控制器上URControl进程所使用的端口
+sudo ss -tulnp | grep URControl
+
+
+sudo ss -tulnp | grep 30002
+
+
+# 查看ufw防火墙状态（Ubuntu默认防火墙）
+sudo ufw status
+
+
+
+使用nc（netcat）测试（更简洁）
+
+ur@ur:~$ nc -zv 0.0.0.0 30001
+Connection to 0.0.0.0 30001 port [tcp/*] succeeded!
+
+
+成功：Connection to 0.0.0.0 30001 port [tcp/*] succeeded!
+失败：nc: connect to 0.0.0.0 port 30001 (tcp) failed: Connection refused
 
 
 # pip install ur-rtde
