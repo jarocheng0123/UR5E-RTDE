@@ -1,13 +1,3 @@
-# pip install ur-rtde
-
-# https://github.com/jarocheng0123/ViTaiSDK
-
-# https://github.com/jarocheng0123/UR5e 
-# 配置canda
-
-
-
-
 # UR机器人RTDE接口（用于通信和控制）
 import rtde_receive
 import rtde_control
@@ -30,6 +20,3 @@ pose[2] += 1  # Z轴增加5cm
 rtde_c = rtde_control.RTDEControlInterface("0.0.0.0")
 rtde_c.moveL(pose, 0.5, 0.3)  # 线性移动
 
-
-# (py312) ur@ur:~/UR$ python RTDE.py 
-# [-0.14396865671123069, -0.43562006072665155, 0.3630723594532053, -0.0012213596815780676, 3.1162765284819702, 0.03889191563689282]
