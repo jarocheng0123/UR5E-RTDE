@@ -14,8 +14,11 @@ Jssvc@183311
 | 端口定义 | [客户端接口概述](https://www.universal-robots.com/articles/ur/interface-communication/overview-of-client-interfaces/)|
 | RTDE 协议指南  | [RTDE 官方教程](https://docs.universal-robots.com/tutorials/communication-protocol-tutorials/rtde-guide.html) |
 | RTDE 控制 API  | [RTDE Control Interface API](https://sdurobotics.gitlab.io/ur_rtde/api/api.html#rtde-control-api) |
-| ROS2 驱动文档  | [UR ROS2 Driver 官方文档](https://docs.universal-robots.com/Universal_Robots_ROS_Documentation/index.html#) |
 | RTDE Python 库 | [RTDE_Python_Client_Library](https://github.com/UniversalRobots/RTDE_Python_Client_Library)|
+| ROS2 驱动文档  | [UR ROS2 Driver 官方文档](https://docs.universal-robots.com/Universal_Robots_ROS_Documentation/index.html#) |
+| ROS 2 文档  | [ROS 2 Documentation](http://fishros.org/doc/ros2/humble/#) |
+| 动手学ROS2  | [动手学ROS2](https://fishros.com/d2lros2/#/) |
+| 鱼香ROS社区  | [鱼香ROS社区](https://fishros.org.cn/forum/) |
 
 
 ## 二、UR 机器人核心端口定义
@@ -104,6 +107,11 @@ conda create -n py310 python=3.10 -y
 conda activate py310
 ```
 
+
+### 30002.py
+
+### 30004.py
+
 ### 2. RTDE Python 库安装（官方版）
 ```bash
 # 激活 py310 环境
@@ -112,10 +120,7 @@ conda activate py310
 # 更新 pip 包管理器
 pip install --upgrade pip
 
-# 方式1：直接通过 pip 安装（推荐）
-pip install git+https://github.com/UniversalRobots/RTDE_Python_Client_Library.git@main
-
-# 方式2：源码安装（需修改源码时用）
+# 源码安装
 git clone https://github.com/UniversalRobots/RTDE_Python_Client_Library.git
 cd RTDE_Python_Client_Library
 pip install -e .
@@ -148,11 +153,12 @@ ros2 topic info /ur/tcp_pose  # 查看话题对应的节点与端口
 ```bash
 # 使用 netcat 测试机器人端口
 # 测试 30004（RTDE）端口
-nc -zv 192.168.1.103 30004
+nc -zv 127.0.0.1 30004
 # 测试 50001（Dashboard）端口
-nc -zv 192.168.1.103 50001
+nc -zv 127.0.0.1 50001
 
-# 成功提示：Connection to 192.168.1.103 30004 port [tcp/*] succeeded!
+# 成功提示：Connection to 127.0.0.1 30004 port [tcp/*] succeeded!
+# 失败提示：nc: connect to 127.0.0.1 port 30004 (tcp) failed: Connection refused
 # 失败排查：1. 机器人未启动 2. IP 错误 3. 防火墙拦截
 ```
 
@@ -173,35 +179,7 @@ sudo ufw allow 50001/tcp       # Dashboard
 sudo ufw status numbered
 ```
 
-### 4. ROS2 实战示例（基于 UR 驱动）
-#### 4.2 订阅 RTDE 实时数据（TCP 位姿）
-```bash
-# 新终端激活环境
-source ~/ur_ros2_ws/install/setup.bash
 
-# 订阅 TCP 位姿话题（30004 端口数据）
-ros2 topic echo /ur_robot_driver/tcp_pose
-```
-
-#### 4.3 发送运动指令（通过 30002 端口）
-```bash
-# 使用 ROS2 动作发送线性运动指令
-ros2 action send_goal /ur_robot_driver/move_line ur_msgs/action/MoveLine "
-target_pose:
-  pose:
-    position:
-      x: 0.5
-      y: 0.0
-      z: 0.3
-    orientation:
-      x: 1.0
-      y: 0.0
-      z: 0.0
-      w: 0.0
-speed: 0.2
-acceleration: 0.1
-"
-```
 
 
 
@@ -239,3 +217,4 @@ acceleration: 0.1
 
 
 
+### 4. ROS2 实战示例（基于 UR 驱动）
