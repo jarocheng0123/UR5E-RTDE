@@ -1,13 +1,21 @@
-# 实时数据交换接口
-# 开启远程模式
+# UR机器人RTDE接口多段位姿移动控制
+# 功能：通过RTDE接口读取机器人位姿并按预设偏移量逐点移动
+# 运行前提：
+# 1. 启动UR机器人并确保网络通畅
+# 2. 安装依赖：
+"""
+conda activate py310  # 激活conda环境
+pip install --upgrade pip  # 升级pip
+pip --version # 检查当前 pip 是否对应 py310
+pip install ur_rtde==1.5.4 # 安装 ur_rtde 库
+"""
 
 import rtde_receive
 import rtde_control
 import time
 
-
 # ROBOT_IP = "192.168.1.103"  # 实际机器
-ROBOT_IP = "0.0.0.0"      # 仿真环境
+ROBOT_IP = "127.0.0.1"   # 仿真环境
 
 def rtde_multi_move():
     rtde_r, rtde_c = None, None
